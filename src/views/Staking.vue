@@ -93,15 +93,42 @@
               class="text-danger"
             >{{ data.item.changes }}</small>
           </template>
+          <!-- Token -->
+          <template #cell(lwchanges)="data">
+            <small
+              v-if="data.item.lwchanges>0"
+              class="text-success"
+            >+{{ data.item.lwchanges }}</small>
+            <small v-else-if="data.item.lwchanges===0">-</small>
+            <small
+              v-else
+              class="text-danger"
+            >{{ data.item.lwchanges }}</small>
+          </template>
+          <!-- Token -->
+          <template #cell(delegate)="data">
+            <b-button
+              variant="primary"
+              class="mr-25 mb-25"
+              @click="show_delegate_modal(data.item.operator_address)"
+              v-if="data.index > 10"
+            >
+              Delegate
+            </b-button>
+            <small v-else class="text-danger">Full!</small>
+          </template>
         </b-table>
       </b-card-body>
     </b-card>
+    <operation-delegate-component
+      :validator-address="delegate_operator_address"
+    />
   </div>
 </template>
 
 <script>
 import {
-  BTable, BMedia, BAvatar, BBadge, BCard, BCardHeader, BCardTitle, VBTooltip, BCardBody,
+  BTable, BMedia, BAvatar, BBadge, BCard, BCardHeader, BCardTitle, VBTooltip, BCardBody, VBModal, BButton,
 } from 'bootstrap-vue'
 import {
   Validator, percent, StakingParameters, formatToken,
@@ -109,6 +136,7 @@ import {
 import { keybase } from '@/libs/fetch'
 // import { toHex } from '@cosmjs/encoding'
 // import fetch from 'node-fetch'
+import OperationDelegateComponent from './OperationDelegateComponent.vue'
 
 export default {
   components: {
@@ -117,11 +145,14 @@ export default {
     BMedia,
     BAvatar,
     BBadge,
+    BButton,
     BCardHeader,
     BCardTitle,
     BCardBody,
+    OperationDelegateComponent,
   },
   directives: {
+    'b-modal': VBModal,
     'b-tooltip': VBTooltip,
   },
   data() {
@@ -133,6 +164,7 @@ export default {
       validators: [new Validator()],
       delegations: [new Validator()],
       changes: {},
+      lwchanges: {},
       validator_fields: [
         {
           key: 'index',
@@ -155,6 +187,14 @@ export default {
           sortable: true,
         },
         {
+          key: 'lwchanges',
+          label: '1W Changes',
+          sortable: true,
+        },
+        {
+          key: 'delegate',
+        },
+        {
           key: 'commission',
           formatter: value => `${percent(value.rate)}%`,
           tdClass: 'text-right d-none d-md-block',
@@ -163,6 +203,7 @@ export default {
           sortByFormatted: true,
         },
       ],
+      delegate_operator_address: '',
     }
   },
   computed: {
@@ -172,6 +213,10 @@ export default {
         const change = this.changes[x.consensus_pubkey.value]
         if (change) {
           xh.changes = change.latest - change.previous
+        }
+        const lwchange = this.lwchanges[x.consensus_pubkey.value]
+        if (lwchange) {
+          xh.lwchanges = lwchange.latest - lwchange.previous
         }
         return xh
       })
@@ -198,6 +243,29 @@ export default {
           }
         })
         this.$set(this, 'changes', changes)
+      })
+
+      // check back 1 week
+      let lwheight = Number(data.block_height)
+      const lwdelta = 14440 * 3
+      if (lwheight > lwdelta) {
+        lwheight -= lwdelta
+      } else {
+        lwheight = 1
+      }
+      const lwchanges = []
+      data.validators.forEach(x => {
+        lwchanges[x.pub_key.value] = { latest: Number(x.voting_power), previous: 0 }
+      })
+      this.$http.getValidatorListByHeight(lwheight).then(previous => {
+        previous.validators.forEach(x => {
+          if (lwchanges[x.pub_key.value]) {
+            lwchanges[x.pub_key.value].previous = Number(x.voting_power)
+          } else {
+            lwchanges[x.pub_key.value] = { latest: 0, previous: Number(x.voting_power) }
+          }
+        })
+        this.$set(this, 'lwchanges', lwchanges)
       })
     })
     this.$http.getStakingParameters().then(res => {
@@ -267,6 +335,12 @@ export default {
           }
         })
       }
+    },
+    show_delegate_modal(address) {
+      this.$set(this, 'delegate_operator_address', address)
+      this.$nextTick(() => {
+        this.$bvModal.show('delegate-window')
+      })
     },
   },
 }
