@@ -108,14 +108,16 @@
           <!-- Token -->
           <template #cell(delegate)="data">
             <b-button
+              v-if="data.index > 10"
               variant="primary"
               class="mr-25 mb-25"
               @click="show_delegate_modal(data.item.operator_address)"
-              v-if="data.index > 10"
             >
               Delegate
             </b-button>
-            <small v-else class="text-danger">Full!</small>
+            <small
+              v-else
+              class="text-danger">Full! (Just kidding)</small>
           </template>
         </b-table>
       </b-card-body>
