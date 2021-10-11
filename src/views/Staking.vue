@@ -152,12 +152,15 @@ export default {
         {
           key: 'changes',
           label: '24H Changes',
+          sortable: true,
         },
         {
           key: 'commission',
           formatter: value => `${percent(value.rate)}%`,
           tdClass: 'text-right d-none d-md-block',
           thClass: 'text-right d-none d-md-block',
+          sortable: true,
+          sortByFormatted: true,
         },
       ],
     }
