@@ -1,7 +1,7 @@
 <template>
   <p class="clearfix mb-0">
     <span class="float-md-left d-block d-md-inline-block mt-25">
-      Powered By
+      Inspired By
       <b-link
         class="ml-25 font-weight-bolder"
         href="#"
@@ -9,9 +9,9 @@
       >Ping.pub</b-link>
     </span>
 
-    <span class="float-md-right d-none d-md-block">Buy me a cup of coffee.
+    <span class="float-md-right d-none d-md-block">Buy me a shot of tequilla.
       <span
-        v-b-popover.hover.topleft="'Atom: cosmos1ev0vtddkl7jlwfawlk06yzncapw2x9quyxx75u'"
+        v-b-popover.hover.topleft="'Atom: cosmos1mzqqrctm0hvkghf66jruxjtggd5j447djnaknh'"
         v-ripple.400="'rgba(113, 102, 240, 0.15)'"
         title="Thanks for your donation!"
         variant="outline-primary"
