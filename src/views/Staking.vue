@@ -134,10 +134,12 @@
             </div>
             <small
               v-else-if="rankSoFar(data) == 'danger'"
-              class="text-danger">Top 33% Already</small>
+              class="text-danger">Top 33% Already
+            </small>
             <small
               v-else-if="rankSoFar(data) == 'warning'"
-              class="text-danger">Top 67% Already</small>
+              class="text-warning">Top 67% Already
+            </small>
           </template>
         </b-table>
       </b-card-body>
@@ -331,12 +333,10 @@ export default {
       // if node did not get at least 1% more today, encourage it
       const onepct = Math.floor(data.item.delegator_shares / 1e6 / 100)
       if (data.item.ltchange > onepct) { // If we already got a lot recently, don't ask for more
-        console.log('gLM 0 ', onepct, data.item, data.item.delegator_shares)
         return 0 // no more
       }
 
       // check how much we're missing
-      console.log('gLM more', onepct, data.item, data.item.delegator_shares, onepct - data.item.ltchange)
       let missing = onepct - data.item.ltchange
 
       // quick exit if 0 missing
