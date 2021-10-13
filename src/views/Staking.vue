@@ -1,5 +1,14 @@
 <template>
   <div>
+    <div>
+      This is a slightly modified from based on Ping.pub.  The idea is to provide a daily boost to each validator in the lowest 33%.
+      <br>
+      This is just a quick try at one way to recommend a delegation.  It will need to be adjusted over time to fit the circumstances, especially for new chains.
+      <br>
+      For now we allow up to an average 1000 JUNO over a 3 day period per smaller validator.  Rapid undelegations will only be recovered up to 1000 JUNO/3 day rather than trying to fill in the entire undelegation at once.
+      <br>
+      The original staking UI is still available on each Validator's page.
+    </div>
     <b-card
       no-body
     >
@@ -94,30 +103,41 @@
             >{{ data.item.changes }}</small>
           </template>
           <!-- Token -->
-          <template #cell(lwchanges)="data">
+          <template #cell(ltchange)="data">
             <small
-              v-if="data.item.lwchanges>0"
+              v-if="data.item.ltchange>0"
               class="text-success"
-            >+{{ data.item.lwchanges }}</small>
-            <small v-else-if="data.item.lwchanges===0">-</small>
+            >+{{ data.item.ltchange }}</small>
+            <small v-else-if="data.item.ltchange===0">-</small>
             <small
               v-else
               class="text-danger"
-            >{{ data.item.lwchanges }}</small>
+            >{{ data.item.ltchange }}</small>
           </template>
           <!-- Token -->
           <template #cell(delegate)="data">
-            <b-button
-              v-if="data.index > 10"
-              variant="primary"
-              class="mr-25 mb-25"
-              @click="show_delegate_modal(data.item.operator_address)"
-            >
-              Delegate
-            </b-button>
+            <div v-if="rankSoFar(data) == 'primary'">
+              <div v-if="giveLittleMore(data) > 0">
+                Target: {{ tokenFormatter(giveLittleMore(data), stakingParameters.bond_denom) }} More
+                <br>
+                <b-button
+                  variant="primary"
+                  class="mr-25 mb-25"
+                  @click="show_delegate_modal(data.item.operator_address)"
+                >
+                  Delegate
+                </b-button>
+              </div>
+              <div v-else>
+                Target Reached :)
+              </div>
+            </div>
             <small
-              v-else
-              class="text-danger">Full! (Just kidding)</small>
+              v-else-if="rankSoFar(data) == 'danger'"
+              class="text-danger">Top 33% Already</small>
+            <small
+              v-else-if="rankSoFar(data) == 'warning'"
+              class="text-danger">Top 67% Already</small>
           </template>
         </b-table>
       </b-card-body>
@@ -166,7 +186,7 @@ export default {
       validators: [new Validator()],
       delegations: [new Validator()],
       changes: {},
-      lwchanges: {},
+      ltchange: {},
       validator_fields: [
         {
           key: 'index',
@@ -189,8 +209,8 @@ export default {
           sortable: true,
         },
         {
-          key: 'lwchanges',
-          label: '1W Changes',
+          key: 'ltchange',
+          label: '3D Changes',
           sortable: true,
         },
         {
@@ -216,9 +236,9 @@ export default {
         if (change) {
           xh.changes = change.latest - change.previous
         }
-        const lwchange = this.lwchanges[x.consensus_pubkey.value]
-        if (lwchange) {
-          xh.lwchanges = lwchange.latest - lwchange.previous
+        const ltchanges = this.ltchange[x.consensus_pubkey.value]
+        if (ltchanges) {
+          xh.ltchange = ltchanges.latest - ltchanges.previous
         }
         return xh
       })
@@ -255,19 +275,19 @@ export default {
       } else {
         lwheight = 1
       }
-      const lwchanges = []
+      const ltchange = []
       data.validators.forEach(x => {
-        lwchanges[x.pub_key.value] = { latest: Number(x.voting_power), previous: 0 }
+        ltchange[x.pub_key.value] = { latest: Number(x.voting_power), previous: 0 }
       })
       this.$http.getValidatorListByHeight(lwheight).then(previous => {
         previous.validators.forEach(x => {
-          if (lwchanges[x.pub_key.value]) {
-            lwchanges[x.pub_key.value].previous = Number(x.voting_power)
+          if (ltchange[x.pub_key.value]) {
+            ltchange[x.pub_key.value].previous = Number(x.voting_power)
           } else {
-            lwchanges[x.pub_key.value] = { latest: 0, previous: Number(x.voting_power) }
+            ltchange[x.pub_key.value] = { latest: 0, previous: Number(x.voting_power) }
           }
         })
-        this.$set(this, 'lwchanges', lwchanges)
+        this.$set(this, 'ltchange', ltchange)
       })
     })
     this.$http.getStakingParameters().then(res => {
@@ -306,6 +326,48 @@ export default {
     percent,
     tokenFormatter(amount, denom) {
       return formatToken({ amount, denom })
+    },
+    giveLittleMore(data) {
+      // if node did not get at least 1% more today, encourage it
+      const onepct = Math.floor(data.item.delegator_shares / 1e6 / 100)
+      if (data.item.ltchange > onepct) { // If we already got a lot recently, don't ask for more
+        console.log('gLM 0 ', onepct, data.item, data.item.delegator_shares)
+        return 0 // no more
+      }
+
+      // check how much we're missing
+      console.log('gLM more', onepct, data.item, data.item.delegator_shares, onepct - data.item.ltchange)
+      let missing = onepct - data.item.ltchange
+
+      // quick exit if 0 missing
+      if (missing === 0) return 0
+
+      // for sudden deallocations, we're not trying to fill in giant gaps
+      // example if we lost -50000, we're not going to target +51000 to bring you back up
+      if (data.item.changes < 0) {
+        // in that case, we are only targeting a max of +1000 for today
+        missing = Math.min(onepct, 1000) - data.item.changes
+      }
+
+      // if missing a lot, then be reasonable
+      // soft limit at 1000 to encourage delegation lower
+      if (missing > 1000) {
+        missing = 1000
+      }
+
+      // just missing a nominal amount
+      return missing * 1e6
+    },
+    rankSoFar() {
+      // avoid gloval var change in rankBadge()
+      const rank = (window.sum / this.stakingPool)
+      if (rank < 0.333) {
+        return 'danger'
+      }
+      if (rank < 0.67) {
+        return 'warning'
+      }
+      return 'primary'
     },
     rankBadge(data) {
       const { index, item } = data
