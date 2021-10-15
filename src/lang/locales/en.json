@@ -1,7 +1,5 @@
 {
-  "message": {
-
-  },
+  "message": {},
   "cosmos": "Cosmos Hub",
   "kava": "Kava",
   "akash-network": "Akash Decloud",
@@ -29,7 +27,8 @@
   "vidulum": "Vidulum",
   "kichain": "KI Chain",
   "genesisL1": "Genesis L1",
-  
+  "odin": "Odin",
+
   "staking": "Staking",
   "governance": "Governance",
   "summary": "Summary",
@@ -56,5 +55,4 @@
   "btn_deposit": "Deposit",
   "btn_detail": "Detail",
   "btn_back_list": "Back To List"
-  
 }

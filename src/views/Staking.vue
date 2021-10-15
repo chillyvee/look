@@ -1,21 +1,40 @@
 <template>
   <div>
-    <b-card
-      no-body
-    >
+    <div>
+      This is a slightly modified from based on Ping.pub. The idea is to provide
+      a daily boost to each validator in the lowest 33%.
+      <br />
+      This is just a quick try at one way to recommend a delegation. It will
+      need to be adjusted over time to fit the circumstances, especially for new
+      chains.
+      <br />
+      For now we allow up to an average 1000 JUNO over a 3 day period per
+      smaller validator. Rapid undelegations will only be recovered up to 1000
+      JUNO/3 day rather than trying to fill in the entire undelegation at once.
+      <br />
+      The original staking UI is still available on each Validator's page.
+      <br />
+      <br />
+      Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
+    </div>
+    <b-card no-body>
       <b-card-header class="d-flex justify-content-between">
         <small class="d-none d-md-block">
           <b-badge variant="danger">
-              &nbsp;
+            &nbsp;
           </b-badge>
           Top 33%
           <b-badge variant="warning">
-              &nbsp;
+            &nbsp;
           </b-badge>
           Top 67% of Voting Power
         </small>
         <b-card-title>
-          <span>Validators {{ validators.length }}/{{ stakingParameters.max_validators }} </span>
+          <span
+            >Validators {{ validators.length }}/{{
+              stakingParameters.max_validators
+            }}
+          </span>
         </b-card-title>
       </b-card-header>
       <b-card-body class="pl-0 pr-0">
@@ -59,39 +78,35 @@
                 </b-avatar>
               </template>
               <span class="font-weight-bolder d-block text-nowrap">
-                <router-link
-                  :to="`./staking/${data.item.operator_address}`"
-                >
+                <router-link :to="`./staking/${data.item.operator_address}`">
                   {{ data.item.description.moniker }}
                 </router-link>
               </span>
-              <small
-                class="text-muted"
-              >{{ data.item.description.website || data.item.description.identity }}</small>
+              <small class="text-muted">{{
+                data.item.description.website || data.item.description.identity
+              }}</small>
             </b-media>
           </template>
           <!-- Token -->
           <template #cell(tokens)="data">
-            <div
-              v-if="data.item.tokens > 0"
-              class="d-flex flex-column"
-            >
-              <span class="font-weight-bold mb-0">{{ tokenFormatter(data.item.tokens, stakingParameters.bond_denom) }}</span>
-              <span class="font-small-2 text-muted text-nowrap d-none d-lg-block">{{ percent(data.item.tokens/stakingPool) }}%</span>
+            <div v-if="data.item.tokens > 0" class="d-flex flex-column">
+              <span class="font-weight-bold mb-0">{{
+                tokenFormatter(data.item.tokens, stakingParameters.bond_denom)
+              }}</span>
+              <span
+                class="font-small-2 text-muted text-nowrap d-none d-lg-block"
+                >{{ percent(data.item.tokens / stakingPool) }}%</span
+              >
             </div>
             <span v-else>{{ data.item.delegator_shares }}</span>
           </template>
           <!-- Token -->
           <template #cell(changes)="data">
-            <small
-              v-if="data.item.changes>0"
-              class="text-success"
-            >+{{ data.item.changes }}</small>
-            <small v-else-if="data.item.changes===0">-</small>
-            <small
-              v-else
-              class="text-danger"
-            >{{ data.item.changes }}</small>
+            <small v-if="data.item.changes > 0" class="text-success"
+              >+{{ data.item.changes }}</small
+            >
+            <small v-else-if="data.item.changes === 0">-</small>
+            <small v-else class="text-danger">{{ data.item.changes }}</small>
           </template>
           <template #cell(operation)="data">
             <b-button
@@ -113,15 +128,22 @@
 
 <script>
 import {
-  BTable, BMedia, BAvatar, BBadge, BCard, BCardHeader, BCardTitle, VBTooltip, BCardBody, BButton,
-} from 'bootstrap-vue'
-import {
-  Validator, percent, StakingParameters, formatToken,
-} from '@/libs/data'
-import { keybase } from '@/libs/fetch'
+  BTable,
+  BMedia,
+  BAvatar,
+  BBadge,
+  BCard,
+  BCardHeader,
+  BCardTitle,
+  VBTooltip,
+  BCardBody,
+  BButton,
+} from 'bootstrap-vue';
+import {Validator, percent, StakingParameters, formatToken} from '@/libs/data';
+import {keybase} from '@/libs/fetch';
 // import { toHex } from '@cosmjs/encoding'
 // import fetch from 'node-fetch'
-import OperationDelegateComponent from './OperationDelegateComponent.vue'
+import OperationDelegateComponent from './OperationDelegateComponent.vue';
 
 export default {
   components: {
@@ -156,7 +178,7 @@ export default {
           tdClass: 'd-none d-md-block',
           thClass: 'd-none d-md-block',
         },
-        { key: 'description', label: 'Validator' },
+        {key: 'description', label: 'Validator'},
         {
           key: 'tokens',
           label: 'Voting Power',
@@ -182,114 +204,128 @@ export default {
           thClass: 'text-right',
         },
       ],
-    }
+    };
   },
   computed: {
     list() {
       return this.validators.map(x => {
-        const xh = x
-        const change = this.changes[x.consensus_pubkey.value]
+        const xh = x;
+        const change = this.changes[x.consensus_pubkey.value];
         if (change) {
-          xh.changes = change.latest - change.previous
+          xh.changes = change.latest - change.previous;
         }
-        return xh
-      })
+        return xh;
+      });
     },
   },
   created() {
     this.$http.getValidatorListByHeight('latest').then(data => {
-      let height = Number(data.block_height)
+      let height = Number(data.block_height);
       if (height > 14400) {
-        height -= 14400
+        height -= 14400;
       } else {
-        height = 1
+        height = 1;
       }
-      const changes = []
+      const changes = [];
       data.validators.forEach(x => {
-        changes[x.pub_key.value] = { latest: Number(x.voting_power), previous: 0 }
-      })
+        changes[x.pub_key.value] = {
+          latest: Number(x.voting_power),
+          previous: 0,
+        };
+      });
       this.$http.getValidatorListByHeight(height).then(previous => {
         previous.validators.forEach(x => {
           if (changes[x.pub_key.value]) {
-            changes[x.pub_key.value].previous = Number(x.voting_power)
+            changes[x.pub_key.value].previous = Number(x.voting_power);
           } else {
-            changes[x.pub_key.value] = { latest: 0, previous: Number(x.voting_power) }
+            changes[x.pub_key.value] = {
+              latest: 0,
+              previous: Number(x.voting_power),
+            };
           }
-        })
-        this.$set(this, 'changes', changes)
-      })
-    })
+        });
+        this.$set(this, 'changes', changes);
+      });
+    });
     this.$http.getStakingParameters().then(res => {
-      this.stakingParameters = res
-    })
+      this.stakingParameters = res;
+    });
     this.$http.getValidatorList().then(res => {
-      const identities = []
-      const temp = res
-      let total = 0
+      const identities = [];
+      const temp = res;
+      let total = 0;
       for (let i = 0; i < temp.length; i += 1) {
-        total += temp[i].tokens
-        const { identity } = temp[i].description
-        const url = this.$store.getters['chains/getAvatarById'](identity)
+        total += temp[i].tokens;
+        const {identity} = temp[i].description;
+        const url = this.$store.getters['chains/getAvatarById'](identity);
         if (url) {
-          temp[i].avatar = url
+          temp[i].avatar = url;
         } else if (identity && identity !== '') {
-          identities.push(identity)
+          identities.push(identity);
         }
       }
-      this.stakingPool = total
-      this.validators = temp
+      this.stakingPool = total;
+      this.validators = temp;
 
       // fetch avatar from keybase
-      let promise = Promise.resolve()
+      let promise = Promise.resolve();
       identities.forEach(item => {
-        promise = promise.then(() => new Promise(resolve => {
-          this.avatar(item, resolve)
-        }))
-      })
-    })
+        promise = promise.then(
+          () =>
+            new Promise(resolve => {
+              this.avatar(item, resolve);
+            }),
+        );
+      });
+    });
   },
   beforeDestroy() {
-    this.islive = false
+    this.islive = false;
   },
   methods: {
     selectValidator(da) {
-      this.validator_address = da
+      this.validator_address = da;
     },
     percent,
     tokenFormatter(amount, denom) {
-      return formatToken({ amount, denom }, {}, 0)
+      return formatToken({amount, denom}, {}, 0);
     },
     rankBadge(data) {
-      const { index, item } = data
+      const {index, item} = data;
       if (index === 0) {
-        window.sum = item.tokens
+        window.sum = item.tokens;
       } else {
-        window.sum += item.tokens
+        window.sum += item.tokens;
       }
-      const rank = window.sum / this.stakingPool
+      const rank = window.sum / this.stakingPool;
       if (rank < 0.333) {
-        return 'danger'
+        return 'danger';
       }
       if (rank < 0.67) {
-        return 'warning'
+        return 'warning';
       }
-      return 'primary'
+      return 'primary';
     },
     avatar(identity, resolve) {
       if (this.islive) {
         keybase(identity).then(d => {
-          resolve()
+          resolve();
           if (Array.isArray(d.them) && d.them.length > 0) {
-            const pic = d.them[0].pictures
+            const pic = d.them[0].pictures;
             if (pic) {
-              const validator = this.validators.find(u => u.description.identity === identity)
-              this.$set(validator, 'avatar', pic.primary.url)
-              this.$store.commit('cacheAvatar', { identity, url: pic.primary.url })
+              const validator = this.validators.find(
+                u => u.description.identity === identity,
+              );
+              this.$set(validator, 'avatar', pic.primary.url);
+              this.$store.commit('cacheAvatar', {
+                identity,
+                url: pic.primary.url,
+              });
             }
           }
-        })
+        });
       }
     },
   },
-}
+};
 </script>
