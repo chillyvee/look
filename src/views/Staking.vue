@@ -8,6 +8,9 @@
       For now we allow up to an average 1000 JUNO over a 3 day period per smaller validator.  Rapid undelegations will only be recovered up to 1000 JUNO/3 day rather than trying to fill in the entire undelegation at once.
       <br>
       The original staking UI is still available on each Validator's page.
+      <br>
+      <br>
+      Feedback welcome in our <a href='https://discord.gg/aYuNMNsu'>Discord</a>
     </div>
     <b-card
       no-body
