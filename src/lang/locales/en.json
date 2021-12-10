@@ -1,7 +1,5 @@
 {
-  "message": {
-
-  },
+  "message": {},
   "cosmos": "Cosmos Hub",
   "kava": "Kava",
   "akash": "Akash Decloud",
@@ -14,7 +12,8 @@
   "persistence": "Persistence",
   "regen": "Regen Network",
   "secret": "Secret Network",
-  
+  "odin": "Odin Protocol",
+
   "staking": "Staking",
   "governance": "Governance",
   "summary": "Summary",
@@ -34,5 +33,4 @@
   "btn_vote": "Vote",
   "btn_detail": "Detail",
   "btn_back_list": "Back To List"
-  
 }
