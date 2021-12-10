@@ -108,16 +108,45 @@
             <small v-else-if="data.item.changes === 0">-</small>
             <small v-else class="text-danger">{{ data.item.changes }}</small>
           </template>
-          <template #cell(operation)="data">
-            <b-button
-              v-b-modal.delegate-window
-              :name="data.item.operator_address"
-              variant="primary"
-              size="sm"
-              @click="selectValidator(data.item.operator_address)"
+          <!-- Token -->
+          <template #cell(ltchange)="data">
+            <small v-if="data.item.ltchange > 0" class="text-success"
+              >+{{ data.item.ltchange }}</small
             >
-              Delegate
-            </b-button>
+            <small v-else-if="data.item.ltchange === 0">-</small>
+            <small v-else class="text-danger">{{ data.item.ltchange }}</small>
+          </template>
+          <!-- Token -->
+          <template #cell(operation)="data">
+            <div v-if="rankSoFar(data) == 'primary'">
+              <div v-if="giveLittleMore(data) > 0">
+                Target:
+                {{
+                  tokenFormatter(
+                    giveLittleMore(data),
+                    stakingParameters.bond_denom,
+                  )
+                }}
+                More
+                <br />
+                <b-button
+                  variant="primary"
+                  class="mr-25 mb-25"
+                  @click="show_delegate_modal(data.item.operator_address)"
+                >
+                  Delegate
+                </b-button>
+              </div>
+              <div v-else>
+                Target Reached :)
+              </div>
+            </div>
+            <small v-else-if="rankSoFar(data) == 'danger'" class="text-danger"
+              >Top 33% Already
+            </small>
+            <small v-else-if="rankSoFar(data) == 'warning'" class="text-warning"
+              >Top 67% Already
+            </small>
           </template>
         </b-table>
       </b-card-body>
@@ -171,6 +200,7 @@ export default {
       validators: [new Validator()],
       delegations: [new Validator()],
       changes: {},
+      ltchange: {},
       validator_fields: [
         {
           key: 'index',
@@ -192,10 +222,17 @@ export default {
           label: '24H Changes',
         },
         {
+          key: 'ltchange',
+          label: '3D Changes',
+          sortable: true,
+        },
+        {
           key: 'commission',
           formatter: value => `${percent(value.rate)}%`,
           tdClass: 'text-right',
           thClass: 'text-right',
+          sortable: true,
+          sortByFormatted: true,
         },
         {
           key: 'operation',
@@ -214,12 +251,17 @@ export default {
         if (change) {
           xh.changes = change.latest - change.previous;
         }
+        const ltchanges = this.ltchange[x.consensus_pubkey.value];
+        if (ltchanges) {
+          xh.ltchange = ltchanges.latest - ltchanges.previous;
+        }
         return xh;
       });
     },
   },
   created() {
     this.$http.getValidatorListByHeight('latest').then(data => {
+      // Determine starting height, do not go below zero
       let height = Number(data.block_height);
       if (height > 14400) {
         height -= 14400;
@@ -233,6 +275,8 @@ export default {
           previous: 0,
         };
       });
+
+      // Determine previous powers
       this.$http.getValidatorListByHeight(height).then(previous => {
         previous.validators.forEach(x => {
           if (changes[x.pub_key.value]) {
@@ -246,10 +290,41 @@ export default {
         });
         this.$set(this, 'changes', changes);
       });
+
+      // check back 1 week
+      let lwheight = Number(data.block_height);
+      const lwdelta = 14440 * 3;
+      if (lwheight > lwdelta) {
+        lwheight -= lwdelta;
+      } else {
+        lwheight = 1;
+      }
+      const ltchange = [];
+      data.validators.forEach(x => {
+        ltchange[x.pub_key.value] = {
+          latest: Number(x.voting_power),
+          previous: 0,
+        };
+      });
+      this.$http.getValidatorListByHeight(lwheight).then(previous => {
+        previous.validators.forEach(x => {
+          if (ltchange[x.pub_key.value]) {
+            ltchange[x.pub_key.value].previous = Number(x.voting_power);
+          } else {
+            ltchange[x.pub_key.value] = {
+              latest: 0,
+              previous: Number(x.voting_power),
+            };
+          }
+        });
+        this.$set(this, 'ltchange', ltchange);
+      });
     });
+
     this.$http.getStakingParameters().then(res => {
       this.stakingParameters = res;
     });
+
     this.$http.getValidatorList().then(res => {
       const identities = [];
       const temp = res;
@@ -272,8 +347,10 @@ export default {
       identities.forEach(item => {
         promise = promise.then(
           () =>
+            // eslint-disable-next-line implicit-arrow-linebreak
             new Promise(resolve => {
               this.avatar(item, resolve);
+              // eslint-disable-next-line comma-dangle
             }),
         );
       });
@@ -289,6 +366,60 @@ export default {
     percent,
     tokenFormatter(amount, denom) {
       return formatToken({amount, denom}, {}, 0);
+    },
+    giveLittleMore(data) {
+      // if node did not get at least 1% more today, encourage it
+      const onepct = Math.max(
+        Math.min(1000, Math.floor(data.item.delegator_shares / 1e6 / 100)), // At most 1000
+        100, // at least 100
+      );
+      console.log(data, onepct);
+
+      if (data.item.ltchange > onepct) {
+        // If we already got a lot recently, don't ask for more
+        return 0; // no more
+      }
+
+      // check how much we're missing
+      let locallt = data.item.ltchange;
+      if (locallt === undefined) {
+        locallt = 0;
+      }
+      let localchange = data.item.change;
+      if (localchange === undefined) {
+        localchange = 0;
+      }
+      let missing = onepct - locallt;
+
+      // quick exit if 0 missing
+      if (missing === 0) return 0;
+
+      // for sudden deallocations, we're not trying to fill in giant gaps
+      // example if we lost -50000, we're not going to target +51000 to bring you back up
+      if (data.item.changes < 0) {
+        // in that case, we are only targeting a max of +1000 for today
+        missing = Math.min(onepct, 1000) - localchange;
+      }
+
+      // if missing a lot, then be reasonable
+      // soft limit at 1000 to encourage delegation lower
+      if (missing > 1000) {
+        missing = 1000;
+      }
+
+      // just missing a nominal amount
+      return missing * 1e6;
+    },
+    rankSoFar() {
+      // avoid gloval var change in rankBadge()
+      const rank = window.sum / this.stakingPool;
+      if (rank < 0.333) {
+        return 'danger';
+      }
+      if (rank < 0.67) {
+        return 'warning';
+      }
+      return 'primary';
     },
     rankBadge(data) {
       const {index, item} = data;
