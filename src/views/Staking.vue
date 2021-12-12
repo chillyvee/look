@@ -8,9 +8,18 @@
       need to be adjusted over time to fit the circumstances, especially for new
       chains.
       <br />
-      For now we allow up to an average 1000 JUNO over a 3 day period per
-      smaller validator. Rapid undelegations will only be recovered up to 1000
-      JUNO/3 day rather than trying to fill in the entire undelegation at once.
+      <div v-if="stakingParameters.bond_denom == 'ujuno'">
+        For now we allow up to an average 1000 JUNO over a 3 day period per
+        smaller validator. Rapid undelegations will only be recovered up to 1000
+        JUNO/3 day rather than trying to fill in the entire undelegation at
+        once.
+      </div>
+      <div v-if="stakingParameters.bond_denom == 'loki'">
+        For now we allow up to an average 1000 ODIN over a 3 day period per
+        smaller validator. Rapid undelegations will only be recovered up to 1000
+        ODIN/3 day rather than trying to fill in the entire undelegation at
+        once.
+      </div>
       <br />
       The original staking UI is still available on each Validator's page.
       <br />
@@ -18,19 +27,34 @@
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
       <br />
       <br />
-      I'm not sure which type coin Odin officially uses, but you can always
-      switch to Keplr-Cosmos chain, delete the Odin net, then add back one of
-      the folowing coin types.
-      <br />
-      <button @click="addOdinHack">
-        Add Odin to Keplr Type 118 (Works for me, but I don't know if it's
-        right)
-      </button>
-      <br />
-      <button @click="addOdinHack494">
-        Add Odin to Keplr Type 494 (movetoodin has type 494, but Keplr will use
-        Type 118 anyways)
-      </button>
+      <div v-if="stakingParameters.bond_denom == 'loki'">
+        I'm not sure which type coin Odin officially uses, but you can always
+        switch to Keplr-Cosmos chain, delete the Odin net, then add back one of
+        the folowing coin types.
+        <br />
+        <button @click="addOdinHack">
+          Add Odin to Keplr Type 118 (Works for me, but I don't know if it's
+          right)
+        </button>
+        <br />
+        <button @click="addOdinHack494">
+          Add Odin to Keplr Type 494 (movetoodin has type 494, but Keplr will
+          use Type 118 anyways)
+        </button>
+        <br />
+        Video tutorial on how to delegate your Odin (worth a watch)
+        {{ selected_chain }}
+        <br />
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/R3-bgihRDY8"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
     </div>
     <b-card no-body>
       <b-card-header class="d-flex justify-content-between">
