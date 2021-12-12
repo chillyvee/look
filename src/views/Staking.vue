@@ -18,7 +18,12 @@
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
       <br />
       <br />
-      <button @click="addOdinHack">Add Odin to Keplr</button>
+      I'm not sure which type coin Odin officially uses, but you can always
+      switch to Keplr-Cosmos chain, delete the Odin net, then add back one of
+      the folowing coin types.
+      <br />
+      <button @click="addOdinHack">Add Odin to Keplr Type 118</button>
+      <button @click="addOdinHack494">Add Odin to Keplr Type 494</button>
     </div>
     <b-card no-body>
       <b-card-header class="d-flex justify-content-between">
@@ -382,7 +387,7 @@ export default {
         },
         currencies: [
           {
-            coinDenom: 'LOKI',
+            coinDenom: 'odin',
             coinMinimalDenom: 'loki',
             coinDecimals: 6,
             coinGeckoId: 'odin',
@@ -390,19 +395,66 @@ export default {
         ],
         feeCurrencies: [
           {
-            coinDenom: 'LOKI',
+            coinDenom: 'odin',
             coinMinimalDenom: 'loki',
             coinDecimals: 6,
             coinGeckoId: 'odin',
           },
         ],
         stakeCurrency: {
-          coinDenom: 'LOKI',
+          coinDenom: 'odin',
           coinMinimalDenom: 'loki',
           coinDecimals: 6,
           coinGeckoId: 'odin',
         },
         coinType: 118,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      });
+    },
+    addOdinHack494() {
+      window.keplr.experimentalSuggestChain({
+        chainId: 'odin-mainnet-freya',
+        chainName: 'Odin',
+        rpc: 'https://odinrpc.chillvalidation.com',
+        rest: 'https://odinapi.chillvalidation.com',
+        bip44: {
+          coinType: 494,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'odin',
+          bech32PrefixAccPub: 'odin' + 'pub',
+          bech32PrefixValAddr: 'odin' + 'valoper',
+          bech32PrefixValPub: 'odin' + 'valoperpub',
+          bech32PrefixConsAddr: 'odin' + 'valcons',
+          bech32PrefixConsPub: 'odin' + 'valconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'odin',
+            coinMinimalDenom: 'loki',
+            coinDecimals: 6,
+            coinGeckoId: 'odin',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'odin',
+            coinMinimalDenom: 'loki',
+            coinDecimals: 6,
+            coinGeckoId: 'odin',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'odin',
+          coinMinimalDenom: 'loki',
+          coinDecimals: 6,
+          coinGeckoId: 'odin',
+        },
+        coinType: 494,
         gasPriceStep: {
           low: 0.01,
           average: 0.025,
