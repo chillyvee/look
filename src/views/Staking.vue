@@ -16,6 +16,9 @@
       <br />
       <br />
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
+      <br />
+      <br />
+      <button @click="addOdinHack">Add Odin to Keplr</button>
     </div>
     <b-card no-body>
       <b-card-header class="d-flex justify-content-between">
@@ -360,6 +363,53 @@ export default {
     this.islive = false;
   },
   methods: {
+    addOdinHack() {
+      window.keplr.experimentalSuggestChain({
+        chainId: 'odin-mainnet-freya',
+        chainName: 'Odin',
+        rpc: 'https://odinrpc.chillvalidation.com',
+        rest: 'https://odinapi.chillvalidation.com',
+        bip44: {
+          coinType: 118,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'odin',
+          bech32PrefixAccPub: 'odin' + 'pub',
+          bech32PrefixValAddr: 'odin' + 'valoper',
+          bech32PrefixValPub: 'odin' + 'valoperpub',
+          bech32PrefixConsAddr: 'odin' + 'valcons',
+          bech32PrefixConsPub: 'odin' + 'valconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'LOKI',
+            coinMinimalDenom: 'loki',
+            coinDecimals: 6,
+            coinGeckoId: 'odin',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'LOKI',
+            coinMinimalDenom: 'loki',
+            coinDecimals: 6,
+            coinGeckoId: 'odin',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'LOKI',
+          coinMinimalDenom: 'loki',
+          coinDecimals: 6,
+          coinGeckoId: 'odin',
+        },
+        coinType: 118,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      });
+    },
     selectValidator(da) {
       this.validator_address = da;
     },
