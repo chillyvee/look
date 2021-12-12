@@ -5,8 +5,8 @@ function toDay(time) {
 }
 
 function formatToken(token) {
-// token.denom
-// token.amount
+  // token.denom
+  // token.amount
   let denom = token.denom.toUpperCase()
   if (denom.charAt(0) === 'U') {
     denom = denom.substring(1)

@@ -1,6 +1,4 @@
-import {
-  Bech32, fromBase64, fromHex, toHex,
-} from '@cosmjs/encoding'
+import { Bech32, fromBase64, fromHex, toHex } from '@cosmjs/encoding'
 import { sha256, stringToPath } from '@cosmjs/crypto'
 // ledger
 import TransportWebBLE from '@ledgerhq/hw-transport-web-ble'
@@ -52,16 +50,22 @@ export function setLocalTxHistory(newTx) {
 }
 
 export async function connectLedger(transport = 'usb') {
-  const trans = await transport === 'usb' ? TransportWebUSB.create() : TransportWebBLE.create()
+  // eslint-disable-next-line
+  const trans =
+    (await transport) === 'usb'
+      ? TransportWebUSB.create()
+      : TransportWebBLE.create()
   return new CosmosApp(trans)
 }
 
 export function operatorAddressToAccount(operAddress) {
   const { prefix, data } = Bech32.decode(operAddress)
-  if (prefix === 'iva') { // handle special cases
+  if (prefix === 'iva') {
+    // handle special cases
     return Bech32.encode('iaa', data)
   }
-  if (prefix === 'crocncl') { // handle special cases
+  if (prefix === 'crocncl') {
+    // handle special cases
     return Bech32.encode('cro', data)
   }
   return Bech32.encode(prefix.replace('valoper', ''), data)
@@ -90,9 +94,23 @@ export function setUserCurrency(currency) {
 }
 
 export function chartColors() {
-  const colors = ['#6610f2', '#20c997', '#000000', '#FF0000',
-    '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF',
-    '#008080', '#0000FF', '#000080', '#FF00FF', '#800080']
+  const colors = [
+    '#6610f2',
+    '#20c997',
+    '#000000',
+    '#FF0000',
+    '#800000',
+    '#FFFF00',
+    '#808000',
+    '#00FF00',
+    '#008000',
+    '#00FFFF',
+    '#008080',
+    '#0000FF',
+    '#000080',
+    '#FF00FF',
+    '#800080',
+  ]
   return Object.values($themeColors).concat(colors)
 }
 
@@ -120,9 +138,13 @@ export function consensusPubkeyToHexAddress(consensusPubkey) {
   if (typeof consensusPubkey === 'object') {
     raw = toHex(fromBase64(consensusPubkey.value))
   } else {
-    raw = toHex(Bech32.decode(consensusPubkey).data).toUpperCase().replace('1624DE6420', '')
+    raw = toHex(Bech32.decode(consensusPubkey).data)
+      .toUpperCase()
+      .replace('1624DE6420', '')
   }
-  const address = toHex(sha256(fromHex(raw))).slice(0, 40).toUpperCase()
+  const address = toHex(sha256(fromHex(raw)))
+    .slice(0, 40)
+    .toUpperCase()
   return address
 }
 
@@ -144,17 +166,29 @@ function getHdPath(address) {
   return stringToPath(hdPath)
 }
 
-export async function sign(device, chainId, signerAddress, messages, fee, memo, signerData) {
+export async function sign(
+  device,
+  chainId,
+  signerAddress,
+  messages,
+  fee,
+  memo,
+  signerData
+) {
   let transport
   let signer
   switch (device) {
     case 'ledgerBle':
       transport = await TransportWebBLE.create()
-      signer = new LedgerSigner(transport, { hdPaths: [getHdPath(signerAddress)] })
+      signer = new LedgerSigner(transport, {
+        hdPaths: [getHdPath(signerAddress)],
+      })
       break
     case 'ledgerUSB':
       transport = await TransportWebUSB.create()
-      signer = new LedgerSigner(transport, { hdPaths: [getHdPath(signerAddress)] })
+      signer = new LedgerSigner(transport, {
+        hdPaths: [getHdPath(signerAddress)],
+      })
       break
     case 'keplr':
     default:
@@ -171,12 +205,25 @@ export async function sign(device, chainId, signerAddress, messages, fee, memo, 
   // Ensure the address has some tokens to spend
   const client = await PingWalletClient.offline(signer)
   // const client = await SigningStargateClient.offline(signer)
-  return client.signAmino(device === 'keplr' ? signerAddress : toSignAddress(signerAddress), messages, fee, memo, signerData)
+  return client.signAmino(
+    device === 'keplr' ? signerAddress : toSignAddress(signerAddress),
+    messages,
+    fee,
+    memo,
+    signerData
+  )
   // return signDirect(signer, signerAddress, messages, fee, memo, signerData)
 }
 
-export async function getLedgerAddress(transport = 'blu', hdPath = "m/44'/118/0'/0/0") {
-  const trans = transport === 'usb' ? await TransportWebUSB.create() : await TransportWebBLE.create()
+export async function getLedgerAddress(
+  transport = 'blu',
+  hdPath = "m/44'/118/0'/0/0"
+) {
+  // eslint-disable-next-line
+  const trans =
+    transport === 'usb'
+      ? await TransportWebUSB.create()
+      : await TransportWebBLE.create()
   const signer = new LedgerSigner(trans, { hdPaths: [stringToPath(hdPath)] })
   return signer.getAccounts()
 }
@@ -230,15 +277,17 @@ export function abbrRight(string, length = 6, suffix = '...') {
 
 export function abbrMessage(msg) {
   if (Array.isArray(msg)) {
-    const sum = msg.map(x => abbrMessage(x)).reduce((s, c) => {
-      const sh = s
-      if (sh[c]) {
-        sh[c] += 1
-      } else {
-        sh[c] = 1
-      }
-      return sh
-    }, {})
+    const sum = msg
+      .map(x => abbrMessage(x))
+      .reduce((s, c) => {
+        const sh = s
+        if (sh[c]) {
+          sh[c] += 1
+        } else {
+          sh[c] = 1
+        }
+        return sh
+      }, {})
     const output = []
     Object.keys(sum).forEach(k => {
       output.push(sum[k] > 1 ? `${k}×${sum[k]}` : k)
@@ -246,13 +295,17 @@ export function abbrMessage(msg) {
     return output.join(', ')
   }
   if (msg.typeUrl) {
-    return msg.typeUrl.substring(msg.typeUrl.lastIndexOf('.') + 1).replace('Msg', '')
+    return msg.typeUrl
+      .substring(msg.typeUrl.lastIndexOf('.') + 1)
+      .replace('Msg', '')
   }
   return msg.type.substring(msg.type.lastIndexOf('/') + 1).replace('Msg', '')
 }
 
 export function abbrAddress(address, length = 10) {
-  return address.substring(0, length).concat('...', address.substring(address.length - length))
+  return address
+    .substring(0, length)
+    .concat('...', address.substring(address.length - length))
 }
 
 export function isStringArray(value) {
@@ -273,7 +326,9 @@ export function isToken(value) {
 
 export function formatTokenDenom(tokenDenom) {
   if (tokenDenom) {
-    let denom = tokenDenom.denom_trace ? tokenDenom.denom_trace.base_denom.toUpperCase() : tokenDenom.toUpperCase()
+    let denom = tokenDenom.denom_trace
+      ? tokenDenom.denom_trace.base_denom.toUpperCase()
+      : tokenDenom.toUpperCase()
     if (denom.charAt(0) === 'U' && denom !== 'USDX') {
       denom = denom.substring(1)
     } else if (denom === 'BASECRO') {
@@ -284,6 +339,8 @@ export function formatTokenDenom(tokenDenom) {
       denom = 'LIKE'
     } else if (denom.startsWith('APHOTON')) {
       denom = 'PHOTON'
+    } else if (denom === 'LOKI') {
+      denom = 'ODIN'
     }
 
     return denom
@@ -330,25 +387,55 @@ export function formatTokenAmount(tokenAmount, fraction = 2, denom = 'uatom') {
 }
 
 export function isTestnet() {
-  return (window.location.hostname.startsWith('testnet')
-   || window.location.search.indexOf('testnet') > -1)
+  return (
+    window.location.hostname.startsWith('testnet') ||
+    window.location.search.indexOf('testnet') > -1
+  )
 }
 
-export function formatToken(token, IBCDenom = {}, decimals = 2, withDenom = true) {
+export function formatToken(
+  token,
+  IBCDenom = {},
+  decimals = 2,
+  withDenom = true
+) {
   if (token) {
     if (withDenom) {
-      return `${formatTokenAmount(token.amount, decimals, token.denom)} ${formatTokenDenom(IBCDenom[token.denom] || token.denom)}`
+      return `${formatTokenAmount(
+        token.amount,
+        decimals,
+        token.denom
+      )} ${formatTokenDenom(IBCDenom[token.denom] || token.denom)}`
     }
     return formatTokenAmount(token.amount, decimals, token.denom)
   }
   return token
 }
 
-const COUNT_ABBRS = ['', 'K', 'M', 'B', 't', 'q', 's', 'S', 'o', 'n', 'd', 'U', 'D', 'T', 'Qt', 'Qd', 'Sd', 'St']
+const COUNT_ABBRS = [
+  '',
+  'K',
+  'M',
+  'B',
+  't',
+  'q',
+  's',
+  'S',
+  'o',
+  'n',
+  'd',
+  'U',
+  'D',
+  'T',
+  'Qt',
+  'Qd',
+  'Sd',
+  'St',
+]
 
 export function formatNumber(count, withAbbr = false, decimals = 2) {
   const i = count === 0 ? count : Math.floor(Math.log(count) / Math.log(1000))
-  let result = parseFloat((count / (1000 ** i)).toFixed(decimals))
+  let result = parseFloat((count / 1000 ** i).toFixed(decimals))
   if (withAbbr && COUNT_ABBRS[i]) {
     result += `${COUNT_ABBRS[i]}`
   }
@@ -375,7 +462,9 @@ export function isHexAddress(v) {
 export function getStakingValidatorByHex(chainName, hex) {
   const locals = localStorage.getItem(`validators-${chainName}`)
   if (locals) {
-    const val = JSON.parse(locals).find(x => consensusPubkeyToHexAddress(x.consensus_pubkey) === hex)
+    const val = JSON.parse(locals).find(
+      x => consensusPubkeyToHexAddress(x.consensus_pubkey) === hex
+    )
     if (val) {
       return val.description.moniker
     }
@@ -386,7 +475,9 @@ export function getStakingValidatorByHex(chainName, hex) {
 export function getStakingValidatorByAccount(chainName, addr) {
   const locals = localStorage.getItem(`validators-${chainName}`)
   if (locals) {
-    const val = JSON.parse(locals).find(x => operatorAddressToAccount(x.operator_address) === addr)
+    const val = JSON.parse(locals).find(
+      x => operatorAddressToAccount(x.operator_address) === addr
+    )
     if (val) {
       return val.description.moniker
     }
@@ -410,6 +501,4 @@ export function getStakingValidatorOperator(chainName, addr, length = -1) {
 
 export * from 'compare-versions'
 
-export class Data {
-
-}
+export class Data {}
