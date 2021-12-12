@@ -43,8 +43,11 @@
           strange new address on this site)
         </button>
         <br />
-        Video tutorial on how to delegate your Odin (worth a watch)
-        {{ selected_chain }}
+        <br />
+        <h2>
+          Video tutorial on how to delegate your Odin
+          <font color="red">(worth a watch ESPECIALLY @ 7:21)</font>
+        </h2>
         <br />
         <iframe
           width="560"
@@ -164,7 +167,7 @@
                 {{
                   tokenFormatter(
                     giveLittleMore(data),
-                    stakingParameters.bond_denom,
+                    stakingParameters.bond_denom
                   )
                 }}
                 More
@@ -207,12 +210,12 @@ import {
   VBTooltip,
   BCardBody,
   BButton,
-} from 'bootstrap-vue';
-import {Validator, percent, StakingParameters, formatToken} from '@/libs/data';
-import {keybase} from '@/libs/fetch';
+} from 'bootstrap-vue'
+import { Validator, percent, StakingParameters, formatToken } from '@/libs/data'
+import { keybase } from '@/libs/fetch'
 // import { toHex } from '@cosmjs/encoding'
 // import fetch from 'node-fetch'
-import OperationDelegateComponent from './OperationDelegateComponent.vue';
+import OperationDelegateComponent from './OperationDelegateComponent.vue'
 
 export default {
   components: {
@@ -248,7 +251,7 @@ export default {
           tdClass: 'd-none d-md-block',
           thClass: 'd-none d-md-block',
         },
-        {key: 'description', label: 'Validator'},
+        { key: 'description', label: 'Validator' },
         {
           key: 'tokens',
           label: 'Voting Power',
@@ -281,123 +284,123 @@ export default {
           thClass: 'text-right',
         },
       ],
-    };
+    }
   },
   computed: {
     list() {
       return this.validators.map(x => {
-        const xh = x;
-        const change = this.changes[x.consensus_pubkey.value];
+        const xh = x
+        const change = this.changes[x.consensus_pubkey.value]
         if (change) {
-          xh.changes = change.latest - change.previous;
+          xh.changes = change.latest - change.previous
         }
-        const ltchanges = this.ltchange[x.consensus_pubkey.value];
+        const ltchanges = this.ltchange[x.consensus_pubkey.value]
         if (ltchanges) {
-          xh.ltchange = ltchanges.latest - ltchanges.previous;
+          xh.ltchange = ltchanges.latest - ltchanges.previous
         }
-        return xh;
-      });
+        return xh
+      })
     },
   },
   created() {
     this.$http.getValidatorListByHeight('latest').then(data => {
       // Determine starting height, do not go below zero
-      let height = Number(data.block_height);
+      let height = Number(data.block_height)
       if (height > 14400) {
-        height -= 14400;
+        height -= 14400
       } else {
-        height = 1;
+        height = 1
       }
-      const changes = [];
+      const changes = []
       data.validators.forEach(x => {
         changes[x.pub_key.value] = {
           latest: Number(x.voting_power),
           previous: 0,
-        };
-      });
+        }
+      })
 
       // Determine previous powers
       this.$http.getValidatorListByHeight(height).then(previous => {
         previous.validators.forEach(x => {
           if (changes[x.pub_key.value]) {
-            changes[x.pub_key.value].previous = Number(x.voting_power);
+            changes[x.pub_key.value].previous = Number(x.voting_power)
           } else {
             changes[x.pub_key.value] = {
               latest: 0,
               previous: Number(x.voting_power),
-            };
+            }
           }
-        });
-        this.$set(this, 'changes', changes);
-      });
+        })
+        this.$set(this, 'changes', changes)
+      })
 
       // check back 1 week
-      let lwheight = Number(data.block_height);
-      const lwdelta = 14440 * 3;
+      let lwheight = Number(data.block_height)
+      const lwdelta = 14440 * 3
       if (lwheight > lwdelta) {
-        lwheight -= lwdelta;
+        lwheight -= lwdelta
       } else {
-        lwheight = 1;
+        lwheight = 1
       }
-      const ltchange = [];
+      const ltchange = []
       data.validators.forEach(x => {
         ltchange[x.pub_key.value] = {
           latest: Number(x.voting_power),
           previous: 0,
-        };
-      });
+        }
+      })
       this.$http.getValidatorListByHeight(lwheight).then(previous => {
         previous.validators.forEach(x => {
           if (ltchange[x.pub_key.value]) {
-            ltchange[x.pub_key.value].previous = Number(x.voting_power);
+            ltchange[x.pub_key.value].previous = Number(x.voting_power)
           } else {
             ltchange[x.pub_key.value] = {
               latest: 0,
               previous: Number(x.voting_power),
-            };
+            }
           }
-        });
-        this.$set(this, 'ltchange', ltchange);
-      });
-    });
+        })
+        this.$set(this, 'ltchange', ltchange)
+      })
+    })
 
     this.$http.getStakingParameters().then(res => {
-      this.stakingParameters = res;
-    });
+      this.stakingParameters = res
+    })
 
     this.$http.getValidatorList().then(res => {
-      const identities = [];
-      const temp = res;
-      let total = 0;
+      const identities = []
+      const temp = res
+      let total = 0
       for (let i = 0; i < temp.length; i += 1) {
-        total += temp[i].tokens;
-        const {identity} = temp[i].description;
-        const url = this.$store.getters['chains/getAvatarById'](identity);
+        total += temp[i].tokens
+        const { identity } = temp[i].description
+        const url = this.$store.getters['chains/getAvatarById'](identity)
         if (url) {
-          temp[i].avatar = url;
+          temp[i].avatar = url
         } else if (identity && identity !== '') {
-          identities.push(identity);
+          identities.push(identity)
         }
       }
-      this.stakingPool = total;
-      this.validators = temp;
+      this.stakingPool = total
+      this.validators = temp
 
       // fetch avatar from keybase
-      let promise = Promise.resolve();
+      let promise = Promise.resolve()
       identities.forEach(item => {
         promise = promise.then(
           () =>
             // eslint-disable-next-line implicit-arrow-linebreak
             new Promise(resolve => {
-              this.avatar(item, resolve);
+              this.avatar(item, resolve)
               // eslint-disable-next-line comma-dangle
-            }),
-        );
-      });
-    });
+            })
+        )
+      })
+    })
   },
   beforeDestroy() {
-    this.islive = false;
+    this.islive = false
   },
   methods: {
     addOdinHack() {
@@ -445,7 +448,7 @@ export default {
           average: 0.025,
           high: 0.03,
         },
-      });
+      })
     },
     addOdinHack494() {
       window.keplr.experimentalSuggestChain({
@@ -492,111 +495,111 @@ export default {
           average: 0.025,
           high: 0.03,
         },
-      });
+      })
     },
     selectValidator(da) {
-      this.validator_address = da;
+      this.validator_address = da
     },
     percent,
     tokenFormatter(amount, denom) {
-      return formatToken({amount, denom}, {}, 0);
+      return formatToken({ amount, denom }, {}, 0)
     },
     giveLittleMore(data) {
       // if node did not get at least 1% more today, encourage it
       const onepct = Math.max(
         Math.min(1000, Math.floor(data.item.delegator_shares / 1e6 / 100)), // At most 1000
-        100, // at least 100
-      );
-      console.log(data, onepct);
+        100 // at least 100
+      )
+      console.log(data, onepct)
 
       if (data.item.ltchange > onepct) {
         // If we already got a lot recently, don't ask for more
-        return 0; // no more
+        return 0 // no more
       }
 
       // check how much we're missing
-      let locallt = data.item.ltchange;
+      let locallt = data.item.ltchange
       if (locallt === undefined) {
-        locallt = 0;
+        locallt = 0
       }
-      let localchange = data.item.change;
+      let localchange = data.item.change
       if (localchange === undefined) {
-        localchange = 0;
+        localchange = 0
       }
-      let missing = onepct - locallt;
+      let missing = onepct - locallt
 
       // quick exit if 0 missing
-      if (missing === 0) return 0;
+      if (missing === 0) return 0
 
       // for sudden deallocations, we're not trying to fill in giant gaps
       // example if we lost -50000, we're not going to target +51000 to bring you back up
       if (data.item.changes < 0) {
         // in that case, we are only targeting a max of +1000 for today
-        missing = Math.min(onepct, 1000) - localchange;
+        missing = Math.min(onepct, 1000) - localchange
       }
 
       // if missing a lot, then be reasonable
       // soft limit at 1000 to encourage delegation lower
       if (missing > 1000) {
-        missing = 1000;
+        missing = 1000
       }
 
       // just missing a nominal amount
-      return missing * 1e6;
+      return missing * 1e6
     },
     rankSoFar() {
       // avoid gloval var change in rankBadge()
-      const rank = window.sum / this.stakingPool;
+      const rank = window.sum / this.stakingPool
       if (rank < 0.333) {
-        return 'danger';
+        return 'danger'
       }
       if (rank < 0.67) {
-        return 'warning';
+        return 'warning'
       }
-      return 'primary';
+      return 'primary'
     },
     rankBadge(data) {
-      const {index, item} = data;
+      const { index, item } = data
       if (index === 0) {
-        window.sum = item.tokens;
+        window.sum = item.tokens
       } else {
-        window.sum += item.tokens;
+        window.sum += item.tokens
       }
-      const rank = window.sum / this.stakingPool;
+      const rank = window.sum / this.stakingPool
       if (rank < 0.333) {
-        return 'danger';
+        return 'danger'
       }
       if (rank < 0.67) {
-        return 'warning';
+        return 'warning'
       }
-      return 'primary';
+      return 'primary'
     },
     avatar(identity, resolve) {
       if (this.islive) {
         keybase(identity).then(d => {
-          resolve();
+          resolve()
           if (Array.isArray(d.them) && d.them.length > 0) {
-            const pic = d.them[0].pictures;
+            const pic = d.them[0].pictures
             if (pic) {
               const validator = this.validators.find(
-                u => u.description.identity === identity,
-              );
-              this.$set(validator, 'avatar', pic.primary.url);
+                u => u.description.identity === identity
+              )
+              this.$set(validator, 'avatar', pic.primary.url)
               this.$store.commit('cacheAvatar', {
                 identity,
                 url: pic.primary.url,
-              });
+              })
             }
           }
-        });
+        })
       }
     },
     show_delegate_modal(address) {
-      this.$set(this, 'validator_address', address);
+      this.$set(this, 'validator_address', address)
       this.$nextTick(() => {
-        this.$bvModal.show('delegate-window');
-      });
+        this.$bvModal.show('delegate-window')
+      })
     },
   },
-};
+}
 </script>
