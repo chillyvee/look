@@ -507,6 +507,12 @@ export default {
         });
       }
     },
+    show_delegate_modal(address) {
+      this.$set(this, 'validator_address', address);
+      this.$nextTick(() => {
+        this.$bvModal.show('delegate-window');
+      });
+    },
   },
 };
 </script>
