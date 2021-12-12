@@ -22,8 +22,15 @@
       switch to Keplr-Cosmos chain, delete the Odin net, then add back one of
       the folowing coin types.
       <br />
-      <button @click="addOdinHack">Add Odin to Keplr Type 118</button>
-      <button @click="addOdinHack494">Add Odin to Keplr Type 494</button>
+      <button @click="addOdinHack">
+        Add Odin to Keplr Type 118 (Works for me, but I don't know if it's
+        right)
+      </button>
+      <br />
+      <button @click="addOdinHack494">
+        Add Odin to Keplr Type 494 (movetoodin has type 494, but Keplr will use
+        Type 118 anyways)
+      </button>
     </div>
     <b-card no-body>
       <b-card-header class="d-flex justify-content-between">
