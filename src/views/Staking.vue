@@ -28,18 +28,19 @@
       <br />
       <br />
       <div v-if="stakingParameters.bond_denom == 'loki'">
-        I'm not sure which type coin Odin officially uses, but you can always
-        switch to Keplr-Cosmos chain, delete the Odin net, then add back one of
-        the folowing coin types.
+        <b>Odin is officially coin type 494. </b>
+        <br />If you use a ledger, you might need to use cointype 118 until a
+        coin type 494 ledger app is available. (no idea when)
         <br />
-        <button @click="addOdinHack">
-          Add Odin to Keplr Type 118 (Works for me, but I don't know if it's
-          right)
-        </button>
         <br />
         <button @click="addOdinHack494">
-          Add Odin to Keplr Type 494 (movetoodin has type 494, but Keplr will
-          use Type 118 anyways)
+          Add Odin to Keplr Type 494 (This is the right official addresss
+          matching https://moveto.odinprotocol.io/) - Don't use with ledger +
+          cosmos app!
+        </button>
+        <button @click="addOdinHack">
+          Rescue: Add Odin to Keplr CoinType 118 (only if you transferred to a
+          strange new address on this site)
         </button>
         <br />
         Video tutorial on how to delegate your Odin (worth a watch)

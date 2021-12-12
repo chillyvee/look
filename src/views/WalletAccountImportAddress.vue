@@ -12,14 +12,8 @@
       @on-complete="formSubmitted"
     >
       <!-- Device tab -->
-      <tab-content
-        title="Device"
-        :before-change="validationFormDevice"
-      >
-        <validation-observer
-          ref="deviceRules"
-          tag="form"
-        >
+      <tab-content title="Device" :before-change="validationFormDevice">
+        <validation-observer ref="deviceRules" tag="form">
           <b-row>
             <b-col md="12">
               <b-form-group
@@ -31,11 +25,7 @@
                   name="device"
                   rules="required"
                 >
-                  <b-form-radio-group
-                    v-model="device"
-                    stacked
-                  >
-
+                  <b-form-radio-group v-model="device" stacked>
                     <b-form-radio
                       v-model="device"
                       name="device"
@@ -44,6 +34,9 @@
                       class="mb-1 mt-1"
                     >
                       Keplr
+                      <font color="red"
+                        >(Do NOT use this for Odin Protocol)</font
+                      >
                     </b-form-radio>
                     <b-form-radio
                       v-model="device"
@@ -52,6 +45,9 @@
                       class="mb-1"
                     >
                       Ledger via WebUSB
+                      <font color="red"
+                        >(Do NOT use this for Odin Protocol)</font
+                      >
                     </b-form-radio>
                     <b-form-radio
                       v-model="device"
@@ -60,13 +56,22 @@
                       class="mb-1"
                     >
                       Ledger via Bluetooth
+                      <font color="red"
+                        >(Do NOT use this for Odin Protocol)</font
+                      >
                     </b-form-radio>
                     <b-form-radio
                       v-model="device"
                       name="device"
                       value="address"
                     >
-                      Address (Observe Only)
+                      Manual Address (Observe or Odin Protocol)
+                      <span style="color:green; font-weight: bold"
+                        >&lt;-- Use Manual Address for Odin Protocol ✅
+                        <br />(Should match the address you used when bridging
+                        in from https://moveto.odinprotocol.io/) <br />
+                        In case you have a mismatch, ask for help!</span
+                      >
                     </b-form-radio>
                   </b-form-radio-group>
                   <b-form-input
@@ -76,18 +81,19 @@
                     name="address"
                     placeholder="cosmos1ev0vtddkl7jlwfawlk06yzncapw2x9quyxx75u"
                   />
+                  <span
+                    style="color:green; font-weight: bold"
+                    v-if="device === 'address'"
+                    >Copy and paste from Keplr (Especially for Odin Protocol
+                    Users)</span
+                  >
                   <small class="text-danger">{{ debug }}{{ errors[0] }}</small>
+                  <br />
                 </validation-provider>
               </b-form-group>
             </b-col>
-            <b-col
-              v-if="device.startsWith('ledger')"
-              md="12"
-            >
-              <b-form-group
-                label="HD Path"
-                label-for="hdpath"
-              >
+            <b-col v-if="device.startsWith('ledger')" md="12">
+              <b-form-group label="HD Path" label-for="hdpath">
                 <validation-provider
                   #default="{ errors }"
                   name="HD Path"
@@ -108,20 +114,11 @@
       </tab-content>
 
       <!-- address  -->
-      <tab-content
-        title="Accounts"
-        :before-change="validationFormAddress"
-      >
-        <validation-observer
-          ref="accountRules"
-          tag="form"
-        >
+      <tab-content title="Accounts" :before-change="validationFormAddress">
+        <validation-observer ref="accountRules" tag="form">
           <b-row>
             <b-col md="12">
-              <b-form-group
-                label="Account Name"
-                label-for="account_name"
-              >
+              <b-form-group label="Account Name" label-for="account_name">
                 <validation-provider
                   #default="{ errors }"
                   name="Account Name"
@@ -130,7 +127,7 @@
                   <b-form-input
                     id="account_name"
                     v-model="name"
-                    :state="errors.length > 0 ? false:null"
+                    :state="errors.length > 0 ? false : null"
                     placeholder="Ping Nano X"
                     :readonly="edit"
                   />
@@ -138,14 +135,8 @@
                 </validation-provider>
               </b-form-group>
             </b-col>
-            <b-col
-              v-if="accounts"
-              md="12"
-            >
-              <b-form-group
-                label="Public Key"
-                label-for="ir"
-              >
+            <b-col v-if="accounts" md="12">
+              <b-form-group label="Public Key" label-for="ir">
                 <validation-provider
                   #default="{ errors }"
                   name="Public Key"
@@ -155,16 +146,14 @@
                     id="ir"
                     :value="formatPubkey(accounts.pubkey)"
                     readonly
-                    :state="errors.length > 0 ? false:null"
+                    :state="errors.length > 0 ? false : null"
                   />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
               </b-form-group>
             </b-col>
             <b-col md="12">
-              <b-form-group
-                label="Import Address For Chains:"
-              >
+              <b-form-group label="Import Address For Chains:">
                 <validation-provider
                   #default="{ errors }"
                   name="addrs"
@@ -173,7 +162,7 @@
                   <div class="demo-inline-spacing text-uppercase">
                     <b-row>
                       <b-col
-                        v-for="item, key in chains"
+                        v-for="(item, key) in chains"
                         :key="key"
                         xs="12"
                         md="4"
@@ -204,26 +193,16 @@
         </validation-observer>
       </tab-content>
 
-      <tab-content
-        title="Confirmation"
-      >
+      <tab-content title="Confirmation">
         <div class="d-flex border-bottom mb-2">
-          <feather-icon
-            icon="UserIcon"
-            size="19"
-            class="mb-50"
-          />
+          <feather-icon icon="UserIcon" size="19" class="mb-50" />
           <h4 class="mb-0 ml-50">
             {{ name }}
           </h4>
         </div>
 
         <b-row class="mb-2">
-          <b-col
-            v-for="i in addresses"
-            :key="i.addr"
-            cols="12"
-          >
+          <b-col v-for="i in addresses" :key="i.addr" cols="12">
             <b-input-group class="mb-25">
               <b-input-group-prepend is-text>
                 <b-avatar
@@ -239,7 +218,6 @@
         </b-row>
       </tab-content>
     </form-wizard>
-
   </div>
 </template>
 
@@ -264,7 +242,10 @@ import {
 import { required } from '@validations'
 import store from '@/store'
 import {
-  addressDecode, addressEnCode, getLedgerAddress, getLocalAccounts,
+  addressDecode,
+  addressEnCode,
+  getLedgerAddress,
+  getLocalAccounts,
 } from '@/libs/data'
 import { toHex } from '@cosmjs/encoding'
 
@@ -313,23 +294,32 @@ export default {
     addresses() {
       if (this.accounts && this.accounts.address) {
         const { data } = addressDecode(this.accounts.address)
-        return this.selected.map(x => {
-          if (this.chains[x]) {
-            const { logo, addr_prefix } = this.chains[x]
-            const addr = addressEnCode(addr_prefix, data)
-            return {
-              chain: x, addr, logo, hdpath: this.hdpath,
+        return this.selected
+          .map(x => {
+            if (this.chains[x]) {
+              const { logo, addr_prefix } = this.chains[x]
+              const addr = addressEnCode(addr_prefix, data)
+              return {
+                chain: x,
+                addr,
+                logo,
+                hdpath: this.hdpath,
+              }
             }
-          }
-          return null
-        }).filter(x => x != null)
+            return null
+          })
+          .filter(x => x != null)
       }
       return []
     },
   },
   mounted() {
     const { selected } = store.state.chains
-    if (selected && selected.chain_name && !this.exludes.includes(selected.chain_name)) {
+    if (
+      selected &&
+      selected.chain_name &&
+      !this.exludes.includes(selected.chain_name)
+    ) {
       this.selected.push(selected.chain_name)
     }
     const name = new URLSearchParams(window.location.search).get('name')
@@ -354,7 +344,7 @@ export default {
   },
   methods: {
     formatPubkey(v) {
-      if (typeof (v) === 'string') {
+      if (typeof v === 'string') {
         return v
       }
       if (v) {
@@ -387,7 +377,9 @@ export default {
           }
           return true
         }
-      } catch (e) { this.debug = e }
+      } catch (e) {
+        this.debug = e
+      }
       return false
     },
     formSubmitted() {
@@ -418,12 +410,13 @@ export default {
     async validationFormDevice() {
       let ok = String(this.name).length > 0
 
-      if (!ok) { // new import, otherwise it's edit mode.
+      if (!ok) {
+        // new import, otherwise it's edit mode.
         switch (this.device) {
           case 'keplr':
             await this.cennectKeplr().then(accounts => {
               if (accounts) {
-              // eslint-disable-next-line prefer-destructuring
+                // eslint-disable-next-line prefer-destructuring
                 this.accounts = accounts[0]
                 ok = true
               }
@@ -431,15 +424,17 @@ export default {
             break
           case 'ledger':
           case 'ledger2':
-            await this.connect().then(accounts => {
-              if (accounts) {
-              // eslint-disable-next-line prefer-destructuring
-                this.accounts = accounts[0]
-                ok = true
-              }
-            }).catch(e => {
-              this.debug = e
-            })
+            await this.connect()
+              .then(accounts => {
+                if (accounts) {
+                  // eslint-disable-next-line prefer-destructuring
+                  this.accounts = accounts[0]
+                  ok = true
+                }
+              })
+              .catch(e => {
+                this.debug = e
+              })
             break
           default:
             ok = this.localAddress()
@@ -471,6 +466,6 @@ export default {
 </script>
 
 <style lang="scss">
-  // @import '@core/assets/fonts/feather/iconfont.css';
-  @import '@core/scss/vue/libs/vue-wizard.scss';
+// @import '@core/assets/fonts/feather/iconfont.css';
+@import '@core/scss/vue/libs/vue-wizard.scss';
 </style>
