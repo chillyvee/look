@@ -16,6 +16,11 @@
         <validation-observer ref="deviceRules" tag="form">
           <b-row>
             <b-col md="12">
+              <h2>
+                <font color="red">
+                  DO NOT USE A LEDGER+COSMOS APP FOR ODIN
+                </font>
+              </h2>
               <b-form-group
                 label="Select a device to import accounts"
                 label-for="device"
@@ -73,6 +78,11 @@
                         In case you have a mismatch, ask for help!</span
                       >
                     </b-form-radio>
+                    <h2>
+                      <font color="red">
+                        DO NOT USE A LEDGER+COSMOS APP FOR ODIN
+                      </font>
+                    </h2>
                   </b-form-radio-group>
                   <b-form-input
                     v-if="device === 'address'"

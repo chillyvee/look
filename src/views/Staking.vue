@@ -28,9 +28,16 @@
       <br />
       <br />
       <div v-if="stakingParameters.bond_denom == 'loki'">
+        <h2>
+          <font color="red">
+            DO NOT USE A LEDGER+COSMOS APP FOR ODIN
+          </font>
+        </h2>
         <b>Odin is officially coin type 494. </b>
-        <br />If you use a ledger, you might need to use cointype 118 until a
-        coin type 494 ledger app is available. (no idea when)
+        <br />If you enjoy zero support, you may be able to get away using a
+        ledger, abusing cointype 118 until a coin type 494 ledger app is
+        available. (no idea when, and I don't recommend this unless you enjoy
+        self-support)
         <br />
         <br />
         <button @click="addOdinHack494">
