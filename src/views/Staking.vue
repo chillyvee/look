@@ -20,6 +20,12 @@
         ODIN/3 day rather than trying to fill in the entire undelegation at
         once.
       </div>
+      <div v-if="stakingParameters.bond_denom == 'uhuahua'">
+        For now we allow up to an average 1000 HUAHUA over a 3 day period per
+        smaller validator. Rapid undelegations will only be recovered up to 1000
+        HUAHUA/3 day rather than trying to fill in the entire undelegation at
+        once.
+      </div>
       <br />
       The original staking UI is still available on each Validator's page.
       <br />
@@ -27,6 +33,11 @@
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
       <br />
       <br />
+      <div v-if="stakingParameters.bond_denom == 'uhuahua'">
+        <button @click="addHuahuaHack">
+          Add $HUAHUA to Keplr
+        </button>
+      </div>
       <div v-if="stakingParameters.bond_denom == 'loki'">
         <h2>
           <font color="red">
@@ -410,6 +421,53 @@ export default {
     this.islive = false
   },
   methods: {
+    addHuahuaHack() {
+      window.keplr.experimentalSuggestChain({
+        chainId: 'chihuahua-1',
+        chainName: 'Chihuahua',
+        rpc: 'https://rpc.chihuahua.wtf',
+        rest: 'https://api.chihuahua.wtf',
+        bip44: {
+          coinType: 118,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'chihuahua',
+          bech32PrefixAccPub: 'chihuahua' + 'pub',
+          bech32PrefixValAddr: 'chihuahua' + 'valoper',
+          bech32PrefixValPub: 'chihuahua' + 'valoperpub',
+          bech32PrefixConsAddr: 'chihuahua' + 'valcons',
+          bech32PrefixConsPub: 'chihuahua' + 'valconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'HUAHUA',
+            coinMinimalDenom: 'uhuahua',
+            coinDecimals: 6,
+            coinGeckoId: 'HUAHUA',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'HUAHUA',
+            coinMinimalDenom: 'uhuahua',
+            coinDecimals: 6,
+            coinGeckoId: 'HUAHUA',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'HUAHUA',
+          coinMinimalDenom: 'uhuahua',
+          coinDecimals: 6,
+          coinGeckoId: 'HUAHUA',
+        },
+        coinType: 118,
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.035,
+          high: 0.04,
+        },
+      })
+    },
     addOdinHack() {
       window.keplr.experimentalSuggestChain({
         chainId: 'odin-mainnet-freya',
