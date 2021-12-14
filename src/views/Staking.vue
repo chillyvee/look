@@ -30,6 +30,22 @@
         For now we allow up to an average 1000 DIG over a 3 day period per
         smaller validator. Rapid undelegations will only be recovered up to 1000
         DIG/3 day rather than trying to fill in the entire undelegation at once.
+        <br />
+        <br />
+        <div style="text-align: center; width: 100%">
+          <h1>Want to do something cool for us?</h1>
+          <b-button
+            style="font-size: 2em;"
+            variant="primary"
+            @click="
+              show_delegate_modal(
+                'digvaloper1y5lpxm5fnquc5njw7mdpk66tfyvkqrgal2q5zd'
+              )
+            "
+          >
+            [Click Me] Delegate to Chill Validation (We bring you this web site)
+          </b-button>
+        </div>
       </div>
       <br />
       The original staking UI is still available on each Validator's page.
