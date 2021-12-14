@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="stakingParameters.bond_denom">
     <div>
       This is a slightly modified from based on Ping.pub. The idea is to provide
       a daily boost to each validator in the lowest 33%.
@@ -26,6 +26,11 @@
         HUAHUA/3 day rather than trying to fill in the entire undelegation at
         once.
       </div>
+      <div v-if="stakingParameters.bond_denom == 'udig'">
+        For now we allow up to an average 1000 DIG over a 3 day period per
+        smaller validator. Rapid undelegations will only be recovered up to 1000
+        DIG/3 day rather than trying to fill in the entire undelegation at once.
+      </div>
       <br />
       The original staking UI is still available on each Validator's page.
       <br />
@@ -33,6 +38,11 @@
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
       <br />
       <br />
+      <div v-if="stakingParameters.bond_denom == 'udig'">
+        <button @click="addDigHack">
+          Add $DIG to Keplr
+        </button>
+      </div>
       <div v-if="stakingParameters.bond_denom == 'uhuahua'">
         <button @click="addHuahuaHack">
           Add $HUAHUA to Keplr
@@ -180,11 +190,13 @@
           <!-- Token -->
           <template #cell(operation)="data">
             <div v-if="rankSoFar(data) == 'primary'">
-              <div v-if="giveLittleMore(data) > 0">
+              <div
+                v-if="giveLittleMore(data, stakingParameters.bond_denom) > 0"
+              >
                 Target:
                 {{
                   tokenFormatter(
-                    giveLittleMore(data),
+                    giveLittleMore(data, stakingParameters.bond_denom),
                     stakingParameters.bond_denom
                   )
                 }}
@@ -197,6 +209,19 @@
                 >
                   Delegate
                 </b-button>
+
+                <div
+                  v-if="
+                    tokenFormatter(
+                      giveLittleMore(data, stakingParameters.bond_denom),
+                      stakingParameters.bond_denom
+                    ) == '999999 DIG'
+                  "
+                >
+                  <span style="font-weight: bold; color: green;"
+                    >Sponsor the Hungry :)</span
+                  >
+                </div>
               </div>
               <div v-else>
                 Target Reached :)
@@ -468,6 +493,53 @@ export default {
         },
       })
     },
+    addDigHack() {
+      window.keplr.experimentalSuggestChain({
+        chainId: 'dig-1',
+        chainName: 'Chihuahua',
+        rpc: 'https://digrpc.chillvalidation.com',
+        rest: 'https://digapi.chillvalidation.com',
+        bip44: {
+          coinType: 118,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'dig',
+          bech32PrefixAccPub: 'dig' + 'pub',
+          bech32PrefixValAddr: 'dig' + 'valoper',
+          bech32PrefixValPub: 'dig' + 'valoperpub',
+          bech32PrefixConsAddr: 'dig' + 'valcons',
+          bech32PrefixConsPub: 'dig' + 'valconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'DIG',
+            coinMinimalDenom: 'udig',
+            coinDecimals: 6,
+            coinGeckoId: 'DIG',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'DIG',
+            coinMinimalDenom: 'udig',
+            coinDecimals: 6,
+            coinGeckoId: 'DIG',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'DIG',
+          coinMinimalDenom: 'udig',
+          coinDecimals: 6,
+          coinGeckoId: 'DIG',
+        },
+        coinType: 118,
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.035,
+          high: 0.04,
+        },
+      })
+    },
     addOdinHack() {
       window.keplr.experimentalSuggestChain({
         chainId: 'odin-mainnet-freya',
@@ -569,7 +641,14 @@ export default {
     tokenFormatter(amount, denom) {
       return formatToken({ amount, denom }, {}, 0)
     },
-    giveLittleMore(data) {
+    giveLittleMore(data, bond_denom) {
+      console.log('giveLittleMore', data, bond_denom)
+      if (bond_denom == 'udig') {
+        if (data.item.description.moniker == 'Chill Validation') {
+          return 999999 * 1e6
+        }
+      }
+
       // if node did not get at least 1% more today, encourage it
       const onepct = Math.max(
         Math.min(1000, Math.floor(data.item.delegator_shares / 1e6 / 100)), // At most 1000
