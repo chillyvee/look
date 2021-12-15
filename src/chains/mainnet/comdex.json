@@ -1,0 +1,7 @@
+{
+  "chain_name": "comdex",
+  "api": "https://api-comdex.zenchainlabs.io",
+  "sdk_version": "0.44.3",
+  "addr_prefix": "comdex",
+  "logo": "https://github.com/comdex-official/logos/raw/main/cmdx-high-resolution.png"
+}
