@@ -56,7 +56,7 @@
             (We bring you this web site)
             <br />
             <br />
-            [ Yes Click Me ]
+            [ Yes Click Me ] (Thanks! 😉)
           </b-button>
         </div>
         <div style="clear: both;" />
