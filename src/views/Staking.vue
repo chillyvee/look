@@ -35,7 +35,7 @@
         <div style="text-align: center; width: 100%">
           <h1>Want to do something cool for us?</h1>
           <b-button
-            style="font-size: 2em;"
+            style="font-size: 2em; width: 60%"
             variant="primary"
             @click="
               show_delegate_modal(
@@ -43,9 +43,23 @@
               )
             "
           >
-            [Click Me] Delegate to Chill Validation (We bring you this web site)
+            <img
+              src="/chill360.png"
+              height="175px"
+              vertical-align="text-top"
+              style="float: left; "
+            />
+            <br />
+            Delegate to Chill Validation
+            <br />
+            <br />
+            (We bring you this web site)
+            <br />
+            <br />
+            [ Yes Click Me ]
           </b-button>
         </div>
+        <div style="clear: both;" />
       </div>
       <br />
       The original staking UI is still available on each Validator's page.
