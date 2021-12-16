@@ -26,12 +26,7 @@
         HUAHUA/3 day rather than trying to fill in the entire undelegation at
         once.
       </div>
-      <div v-if="stakingParameters.bond_denom == 'udig'">
-        For now we allow up to an average 1000 DIG over a 3 day period per
-        smaller validator. Rapid undelegations will only be recovered up to 1000
-        DIG/3 day rather than trying to fill in the entire undelegation at once.
-        <br />
-        <br />
+      <div v-if="false">
         <div style="text-align: center; width: 100%">
           <h1>Want to do something cool for us?</h1>
           <b-button
@@ -58,6 +53,23 @@
             <br />
             [ Yes Click Me ] (Thanks! 😉)
           </b-button>
+        </div>
+        <div style="clear: both;" />
+      </div>
+      <div v-if="stakingParameters.bond_denom == 'udig'">
+        For now we allow up to an average 1000 DIG over a 3 day period per
+        smaller validator. Rapid undelegations will only be recovered up to 1000
+        DIG/3 day rather than trying to fill in the entire undelegation at once.
+        <br />
+        <br />
+        <div style="text-align: center; width: 100%">
+          <h2>Wow that was crazy</h2>
+          Thank you for your delegation everybody :) We super super appreciate
+          it :)
+          <br />
+          <br />
+          And please please spread out your delegations so that all validators
+          get some love :)
         </div>
         <div style="clear: both;" />
       </div>
