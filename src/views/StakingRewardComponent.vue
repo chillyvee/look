@@ -46,7 +46,7 @@
             <h6 class="transaction-title">
               {{ formatNumber(d.amount) }}
             </h6>
-            <small>{{ d.denom }}</small>
+            <small>{{ formatDenom(d.denom) }} </small>
           </b-media-body>
         </b-media>
         <small class="text-primary d-none d-xl-block">
@@ -83,7 +83,7 @@ import {
   BAvatar,
   BButton,
 } from 'bootstrap-vue'
-import { formatTokenDenom } from '@/libs/data'
+// import { formatTokenDenom } from '@/libs/data'
 import OperationWithdrawCommissionComponent from './OperationWithdrawCommissionComponent.vue'
 
 export default {
@@ -119,9 +119,11 @@ export default {
   methods: {
     formatNumber(value) {
       return Number(value).toFixed(2)
+      // return Number(value).toFixed(2) // does not account for decimals with available information
     },
     formatDenom(denom) {
-      return formatTokenDenom(denom)
+      return denom
+      // return formatTokenDenom(denom) // does not account for decimals with available information
     },
   },
 }
