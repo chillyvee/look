@@ -80,8 +80,8 @@
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
       <br />
       <br />
-      <h2>Having a little trouble?</h2>
       <div v-if="stakingParameters.bond_denom == 'udig'">
+        <h2>Having a little trouble?</h2>
         <button @click="addDigHack">
           Add $DIG to Keplr
         </button>
