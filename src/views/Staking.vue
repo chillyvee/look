@@ -548,7 +548,7 @@ export default {
     addDigHack() {
       window.keplr.experimentalSuggestChain({
         chainId: 'dig-1',
-        chainName: 'Chihuahua',
+        chainName: 'Dig',
         rpc: 'https://digrpc.chillvalidation.com',
         rest: 'https://digapi.chillvalidation.com',
         bip44: {
