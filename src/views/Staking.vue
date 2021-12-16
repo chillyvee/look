@@ -80,10 +80,20 @@
       Feedback welcome in our <a href="https://discord.gg/aYuNMNsu">Discord</a>
       <br />
       <br />
+      <h2>Having a little trouble?</h2>
       <div v-if="stakingParameters.bond_denom == 'udig'">
         <button @click="addDigHack">
           Add $DIG to Keplr
         </button>
+        <b>
+          &lt;-- If you're having trouble delegating, your Keplr might still be
+          on Dig Testnet. Switch to Cosmos, Delete the previous Dig Tesnet, Then
+          add this new one.
+        </b>
+        <br />
+        Alternate Method: Use another Chrome profile, Install Keplr, Import your
+        account, and add this Dig Network (to avoid disturbing your current
+        Keplr settings)
       </div>
       <div v-if="stakingParameters.bond_denom == 'uhuahua'">
         <button @click="addHuahuaHack">
