@@ -1,40 +1,19 @@
 <template>
   <div>
-    <b-card
-      bg-variant="secondary"
-      style="color: #fff"
-    >
-      <div
-        class="d-flex flex-row align-items-center text-truncate"
-      >
-        <b-avatar
-          id="address-qr"
-          rounded
-          size="52"
-        >
-          <feather-icon
-            icon="CameraIcon"
-            size="32"
-          />
+    <b-card bg-variant="secondary" style="color: #fff">
+      <div class="d-flex flex-row align-items-center text-truncate">
+        <b-avatar id="address-qr" rounded size="52">
+          <feather-icon icon="CameraIcon" size="32" />
         </b-avatar>
         <div class="ml-2">
-          <h3
-            style="color: #fff"
-            class="mb-0"
-          >
-            Address: <feather-icon
-              icon="CopyIcon"
-              size="18"
-              @click="copy()"
-            />
+          <h3 style="color: #fff" class="mb-0">
+            Address: <feather-icon icon="CopyIcon" size="18" @click="copy()" />
           </h3>
           {{ address }}
         </div>
       </div>
     </b-card>
-    <b-card
-      class="d-flex flex-row"
-    >
+    <b-card class="d-flex flex-row">
       <b-card-header class="pt-0 pl-0 pr-0">
         <b-card-title>Assets</b-card-title>
         <div>
@@ -43,30 +22,18 @@
             variant="primary"
             size="sm"
             class="mr-25"
-          ><feather-icon
-             icon="SendIcon"
-             class="d-md-none"
-           />
+            ><feather-icon icon="SendIcon" class="d-md-none" />
             <span class="d-none d-md-block">Transfer</span>
           </b-button>
-          <b-button
-            v-b-modal.ibc-transfer-window
-            variant="danger"
-            size="sm"
-          ><feather-icon
-             icon="SendIcon"
-             class="d-md-none"
-           />
-            <span class="d-none d-md-block">IBC Transfer
-            </span></b-button>
+          <b-button v-b-modal.ibc-transfer-window variant="danger" size="sm"
+            ><feather-icon icon="SendIcon" class="d-md-none" />
+            <span class="d-none d-md-block">IBC Transfer </span></b-button
+          >
         </div>
       </b-card-header>
       <b-card-body class="pl-0 pr-0">
         <b-row>
-          <b-col
-            xm="12"
-            md="4"
-          >
+          <b-col xm="12" md="4">
             <chart-component-doughnut
               v-if="chartData"
               :height="235"
@@ -75,14 +42,8 @@
               class="mb-3"
             />
           </b-col>
-          <b-col
-            class="border-left d-none d-md-block"
-            md="1"
-          />
-          <b-col
-            xm="12"
-            md="7"
-          >
+          <b-col class="border-left d-none d-md-block" md="1" />
+          <b-col xm="12" md="7">
             <!-- tokens -->
             <div
               v-for="(token, index) in assetTable.items"
@@ -90,22 +51,23 @@
               class="d-flex justify-content-between mb-1"
             >
               <div class="d-flex align-items-center">
-                <b-avatar
-                  :variant="`light-${token.color}`"
-                  rounded
-                >
+                <b-avatar :variant="`light-${token.color}`" rounded>
                   <feather-icon
                     :icon="token.icon"
                     size="16"
                     :class="`text-${token.color}`"
                   />
                 </b-avatar>
-                <span class="font-weight-bold ml-75 d-none d-md-block">{{ token.type }} </span>
+                <span class="font-weight-bold ml-75 d-none d-md-block"
+                  >{{ token.type }}
+                </span>
                 <span class="ml-25">{{ token.percent }}%</span>
               </div>
               <div class="d-flex flex-column">
                 <span class="text-right">{{ formatToken(token) }}</span>
-                <small class="text-right">{{ currency }}{{ token.currency }}</small>
+                <small class="text-right"
+                  >{{ currency }}{{ token.currency }}</small
+                >
               </div>
             </div>
             <!--/ tokens -->
@@ -117,9 +79,7 @@
       </b-card-body>
     </b-card>
 
-    <b-card
-      v-if="delegations"
-    >
+    <b-card v-if="delegations">
       <b-card-header class="pt-0 pl-0 pr-0">
         <b-card-title>Delegation</b-card-title>
         <div>
@@ -129,10 +89,10 @@
             size="sm"
             class="mr-25"
           >
-            <feather-icon
-              icon="LogInIcon"
-              class="d-md-none"
-            /><small class="d-none d-md-block">Delegate</small>
+            <feather-icon icon="LogInIcon" class="d-md-none" /><small
+              class="d-none d-md-block"
+              >Delegate</small
+            >
           </b-button>
           <b-button
             v-if="delegations"
@@ -140,23 +100,19 @@
             variant="primary"
             size="sm"
           >
-            <feather-icon
-              icon="ShareIcon"
-              class="d-md-none"
-            /><small class="d-none d-md-block"> Withdraw Rewards</small>
+            <feather-icon icon="ShareIcon" class="d-md-none" /><small
+              class="d-none d-md-block"
+            >
+              Withdraw Rewards</small
+            >
           </b-button>
         </div>
       </b-card-header>
       <b-card-body class="pl-0 pr-0">
-        <b-table
-          :items="deleTable"
-          stacked="sm"
-        >
+        <b-table :items="deleTable" stacked="sm">
           <template #cell(action)="data">
             <!-- size -->
-            <b-button-group
-              size="sm"
-            >
+            <b-button-group size="sm">
               <b-button
                 v-b-modal.delegate-window
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
@@ -191,13 +147,7 @@
     </b-card>
 
     <b-card title="Transactions">
-      <b-table
-        :items="txs"
-        striped
-        hover
-        responsive="sm"
-        stacked="sm"
-      >
+      <b-table :items="txs" striped hover responsive="sm" stacked="sm">
         <template #cell(height)="data">
           <router-link :to="`../blocks/${data.item.height}`">
             {{ data.item.height }}
@@ -221,31 +171,32 @@
       />
     </b-card>
 
-    <b-card
-      v-if="account"
-      title="Profile"
-      class="text-trancate"
-    >
+    <b-card v-if="account" title="Profile" class="text-trancate">
       <b-table-simple stacked="sm">
         <b-tbody v-if="account.type === 'cosmos-sdk/BaseAccount'">
           <b-tr>
-            <b-td>
-              Account Type
-            </b-td><b-td> {{ account.type }} </b-td>
+            <b-td> Account Type </b-td><b-td> {{ account.type }} </b-td>
           </b-tr>
           <b-tr>
-            <b-td class="max-width:100px;">
-              Account Number
-            </b-td><b-td> {{ account.value.account_number }} </b-td>
+            <b-td class="max-width:100px;"> Account Number </b-td
+            ><b-td> {{ account.value.account_number }} </b-td>
           </b-tr>
           <b-tr>
             <b-td> Sequence </b-td><b-td> {{ account.value.sequence }} </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Public Key </b-td><b-td> <object-field-component :tablefield="account.value.public_key" /> </b-td>
+            <b-td> Public Key </b-td
+            ><b-td>
+              <object-field-component :tablefield="account.value.public_key" />
+            </b-td>
           </b-tr>
         </b-tbody>
-        <b-tbody v-else-if="account.type === 'cosmos-sdk/PeriodicVestingAccount' && account.value.base_vesting_account">
+        <b-tbody
+          v-else-if="
+            account.type === 'cosmos-sdk/PeriodicVestingAccount' &&
+              account.value.base_vesting_account
+          "
+        >
           <b-tr>
             <b-td>
               Account Type
@@ -255,77 +206,154 @@
             </b-td>
           </b-tr>
           <b-tr>
-            <b-td>
-              Account Number
-            </b-td><b-td> {{ account.value.base_vesting_account.base_account.account_number }} </b-td>
+            <b-td> Account Number </b-td
+            ><b-td>
+              {{
+                account.value.base_vesting_account.base_account.account_number
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Sequence </b-td><b-td> {{ account.value.base_vesting_account.base_account.sequence }} </b-td>
+            <b-td> Sequence </b-td
+            ><b-td>
+              {{ account.value.base_vesting_account.base_account.sequence }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Public Key </b-td><b-td> <object-field-component :tablefield="account.value.base_vesting_account.base_account.public_key" /> </b-td>
+            <b-td> Public Key </b-td
+            ><b-td>
+              <object-field-component
+                :tablefield="
+                  account.value.base_vesting_account.base_account.public_key
+                "
+              />
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Original Vesting </b-td><b-td> {{ formatToken(account.value.base_vesting_account.original_vesting) }} </b-td>
+            <b-td> Original Vesting </b-td
+            ><b-td>
+              {{
+                formatToken(account.value.base_vesting_account.original_vesting)
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Delegated Free </b-td><b-td> {{ formatToken(account.value.base_vesting_account.delegated_free) }} </b-td>
+            <b-td> Delegated Free </b-td
+            ><b-td>
+              {{
+                formatToken(account.value.base_vesting_account.delegated_free)
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Delegated Vesting </b-td><b-td> {{ formatToken(account.value.base_vesting_account.delegated_vesting) }} </b-td>
+            <b-td> Delegated Vesting </b-td
+            ><b-td>
+              {{
+                formatToken(
+                  account.value.base_vesting_account.delegated_vesting
+                )
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Vesting Time </b-td><b-td> {{ formatTime(account.value.start_time) }} - {{ formatTime(account.value.base_vesting_account.end_time) }}</b-td>
+            <b-td> Vesting Time </b-td
+            ><b-td>
+              {{ formatTime(account.value.start_time) }} -
+              {{
+                formatTime(account.value.base_vesting_account.end_time)
+              }}</b-td
+            >
           </b-tr>
           <b-tr>
             <b-td> Vesting Periods </b-td>
             <b-td>
               <b-table-simple>
-                <th>Length</th><th>Amount</th>
+                <th>Length</th>
+                <th>Amount</th>
                 <b-tr
-                  v-for="p, index in account.value.vesting_periods"
+                  v-for="(p, index) in account.value.vesting_periods"
                   :key="index"
                 >
-                  <td><small>{{ p.length }} <br>{{ formatLength(p.length) }}</small> </td><td>{{ formatToken(p.amount) }}</td>
+                  <td>
+                    <small
+                      >{{ p.length }} <br />{{ formatLength(p.length) }}</small
+                    >
+                  </td>
+                  <td>{{ formatToken(p.amount) }}</td>
                 </b-tr>
               </b-table-simple>
             </b-td>
           </b-tr>
         </b-tbody>
-        <b-tbody v-else-if="account.type === 'cosmos-sdk/DelayedVestingAccount' && account.value.base_vesting_account">
+        <b-tbody
+          v-else-if="
+            account.type === 'cosmos-sdk/DelayedVestingAccount' &&
+              account.value.base_vesting_account
+          "
+        >
           <b-tr>
-            <b-td>
-              Account Type
-            </b-td><b-td> {{ account.type }} </b-td>
+            <b-td> Account Type </b-td><b-td> {{ account.type }} </b-td>
           </b-tr>
           <b-tr>
-            <b-td style="max-width:100px;">
-              Account Number
-            </b-td><b-td> {{ account.value.base_vesting_account.base_account.account_number }} </b-td>
+            <b-td style="max-width:100px;"> Account Number </b-td
+            ><b-td>
+              {{
+                account.value.base_vesting_account.base_account.account_number
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Sequence </b-td><b-td> {{ account.value.base_vesting_account.base_account.sequence }} </b-td>
+            <b-td> Sequence </b-td
+            ><b-td>
+              {{ account.value.base_vesting_account.base_account.sequence }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Public Key </b-td><b-td> <object-field-component :tablefield="account.value.base_vesting_account.base_account.public_key" /> </b-td>
+            <b-td> Public Key </b-td
+            ><b-td>
+              <object-field-component
+                :tablefield="
+                  account.value.base_vesting_account.base_account.public_key
+                "
+              />
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Original Vesting </b-td><b-td> {{ formatToken(account.value.base_vesting_account.original_vesting) }} </b-td>
+            <b-td> Original Vesting </b-td
+            ><b-td>
+              {{
+                formatToken(account.value.base_vesting_account.original_vesting)
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Delegated Free </b-td><b-td> {{ formatToken(account.value.base_vesting_account.delegated_free) }} </b-td>
+            <b-td> Delegated Free </b-td
+            ><b-td>
+              {{
+                formatToken(account.value.base_vesting_account.delegated_free)
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> Delegated Vesting </b-td><b-td> {{ formatToken(account.value.base_vesting_account.delegated_vesting) }} </b-td>
+            <b-td> Delegated Vesting </b-td
+            ><b-td>
+              {{
+                formatToken(
+                  account.value.base_vesting_account.delegated_vesting
+                )
+              }}
+            </b-td>
           </b-tr>
           <b-tr>
-            <b-td> End Time </b-td><b-td> {{ formatTime(account.value.base_vesting_account.end_time) }}</b-td>
+            <b-td> End Time </b-td
+            ><b-td>
+              {{
+                formatTime(account.value.base_vesting_account.end_time)
+              }}</b-td
+            >
           </b-tr>
         </b-tbody>
-        <object-field-component
-          v-else
-          :tablefield="account.value || account"
-        />
+        <object-field-component v-else :tablefield="account.value || account" />
       </b-table-simple>
     </b-card>
 
@@ -359,8 +387,24 @@
 <script>
 import { $themeColors } from '@themeConfig'
 import {
-  BCard, BAvatar, BPopover, BTable, BRow, BCol, BTableSimple, BTr, BTd, BTbody, BCardHeader, BCardTitle, BButton, BCardBody, VBModal,
-  BButtonGroup, VBTooltip, BPagination,
+  BCard,
+  BAvatar,
+  BPopover,
+  BTable,
+  BRow,
+  BCol,
+  BTableSimple,
+  BTr,
+  BTd,
+  BTbody,
+  BCardHeader,
+  BCardTitle,
+  BButton,
+  BCardBody,
+  VBModal,
+  BButtonGroup,
+  VBTooltip,
+  BPagination,
 } from 'bootstrap-vue'
 import FeatherIcon from '@/@core/components/feather-icon/FeatherIcon.vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -368,8 +412,18 @@ import Ripple from 'vue-ripple-directive'
 import VueQr from 'vue-qr'
 import chainAPI from '@/libs/fetch'
 import {
-  formatToken, formatTokenAmount, formatTokenDenom, getStakingValidatorOperator, percent, tokenFormatter, toDay,
-  toDuration, abbrMessage, abbrAddress, getUserCurrency, getUserCurrencySign,
+  formatToken,
+  formatTokenAmount,
+  formatTokenDenom,
+  getStakingValidatorOperator,
+  percent,
+  tokenFormatter,
+  toDay,
+  toDuration,
+  abbrMessage,
+  abbrAddress,
+  getUserCurrency,
+  getUserCurrencySign,
 } from '@/libs/data'
 import ObjectFieldComponent from './ObjectFieldComponent.vue'
 import OperationTransferComponent from './OperationTransferComponent.vue'
@@ -456,16 +510,18 @@ export default {
       let total = []
       let sum = 0
       let sumCurrency = 0
-      total = total.concat(this.assets.map(x => {
-        const xh = x
-        xh.type = 'Balance'
-        xh.color = 'success'
-        xh.icon = 'CreditCardIcon'
-        xh.currency = this.formatCurrency(xh.amount, xh.denom)
-        sumCurrency += xh.currency
-        sum += Number(xh.amount)
-        return xh
-      }))
+      total = total.concat(
+        this.assets.map(x => {
+          const xh = x
+          xh.type = 'Balance'
+          xh.color = 'success'
+          xh.icon = 'CreditCardIcon'
+          xh.currency = this.formatCurrency(xh.amount, xh.denom)
+          sumCurrency += xh.currency
+          sum += Number(xh.amount)
+          return xh
+        })
+      )
 
       let stakingDenom = ''
 
@@ -489,16 +545,18 @@ export default {
       }
 
       if (this.reward.total) {
-        total = total.concat(this.reward.total.map(x => {
-          const xh = x
-          xh.type = 'Reward'
-          xh.color = 'warning'
-          xh.icon = 'TrendingUpIcon'
-          xh.currency = this.formatCurrency(xh.amount, xh.denom)
-          sumCurrency += xh.currency
-          sum += Number(xh.amount)
-          return xh
-        }))
+        total = total.concat(
+          this.reward.total.map(x => {
+            const xh = x
+            xh.type = 'Reward'
+            xh.color = 'warning'
+            xh.icon = 'TrendingUpIcon'
+            xh.currency = this.formatCurrency(xh.amount, xh.denom)
+            sumCurrency += xh.currency
+            sum += Number(xh.amount)
+            return xh
+          })
+        )
       }
       if (this.unbonding) {
         // total = total.concat(this.unbonding.map(x => {
@@ -557,7 +615,13 @@ export default {
           {
             labels: Object.keys(data),
             data: Object.values(data),
-            backgroundColor: [$themeColors.success, $themeColors.primary, $themeColors.warning, $themeColors.danger, $themeColors.info],
+            backgroundColor: [
+              $themeColors.success,
+              $themeColors.primary,
+              $themeColors.warning,
+              $themeColors.danger,
+              $themeColors.info,
+            ],
             borderWidth: 0,
             pointStyle: 'rectRounded',
           },
@@ -568,9 +632,15 @@ export default {
       const re = []
       if (this.reward.rewards && this.delegations) {
         this.delegations.forEach(e => {
-          const reward = this.reward.rewards.find(r => r.validator_address === e.delegation.validator_address)
+          const reward = this.reward.rewards.find(
+            r => r.validator_address === e.delegation.validator_address
+          )
           re.push({
-            validator: getStakingValidatorOperator(this.$http.config.chain_name, e.delegation.validator_address, 8),
+            validator: getStakingValidatorOperator(
+              this.$http.config.chain_name,
+              e.delegation.validator_address,
+              8
+            ),
             token: formatToken(e.balance, {}, 2),
             reward: tokenFormatter(reward.reward),
             action: e.delegation.validator_address,
@@ -581,7 +651,10 @@ export default {
     },
     accTable() {
       let table = {}
-      if (this.account && this.account.type === 'cosmos-sdk/PeriodicVestingAccount') {
+      if (
+        this.account &&
+        this.account.type === 'cosmos-sdk/PeriodicVestingAccount'
+      ) {
         table = this.account.value
       }
       return table
@@ -595,15 +668,17 @@ export default {
       this.assets = bal
       bal.forEach(x => {
         if (x.denom.startsWith('ibc/')) {
-          chainAPI.getIBCDenomTraceText(this.$http.config.api, x.denom).then(denom => {
-            this.$set(this.denoms, x.denom, denom)
-            const symbol = formatTokenDenom(denom)
-            if (!this.quotes[symbol] && symbol.indexOf('/') === -1) {
-              chainAPI.fetchTokenQuote(symbol).then(quote => {
-                this.$set(this.quotes, symbol, quote)
-              })
-            }
-          })
+          chainAPI
+            .getIBCDenomTraceText(this.$http.config.api, x.denom)
+            .then(denom => {
+              this.$set(this.denoms, x.denom, denom)
+              const symbol = formatTokenDenom(denom)
+              if (!this.quotes[symbol] && symbol.indexOf('/') === -1) {
+                chainAPI.fetchTokenQuote(symbol).then(quote => {
+                  this.$set(this.quotes, symbol, quote)
+                })
+              }
+            })
         } else {
           const symbol = formatTokenDenom(x.denom)
           if (!this.quotes[symbol] && symbol.indexOf('/') === -1) {
@@ -667,24 +742,27 @@ export default {
     formatTime: v => toDay(Number(v) * 1000),
     formatLength: v => toDuration(Number(v) * 1000),
     copy() {
-      this.$copyText(this.address).then(() => {
-        this.$toast({
-          component: ToastificationContent,
-          props: {
-            title: 'Address copied',
-            icon: 'BellIcon',
-          },
-        })
-      }, e => {
-        this.$toast({
-          component: ToastificationContent,
-          props: {
-            title: `Failed to copy address! ${e}`,
-            icon: 'BellIcon',
-            variant: 'danger',
-          },
-        })
-      })
+      this.$copyText(this.address).then(
+        () => {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Address copied',
+              icon: 'BellIcon',
+            },
+          })
+        },
+        e => {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: `Failed to copy address! ${e}`,
+              icon: 'BellIcon',
+              variant: 'danger',
+            },
+          })
+        }
+      )
     },
   },
 }

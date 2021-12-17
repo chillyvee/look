@@ -8,17 +8,12 @@
     responsive="sm"
   >
     <b-tbody>
-      <b-tr
-        v-for="(value, name) in tablefield"
-        :key="name"
-      >
-        <b-td
-          style="text-transform: capitalize; vertical-align: top;"
-        >
-          {{ name }}
+      <b-tr v-for="(value, name) in tablefield" :key="name">
+        <b-td style="text-transform: capitalize; vertical-align: top;">
+          <b>{{ name }}</b>
         </b-td>
         <b-td v-if="isTokenField(value)">
-          {{ formatTokens( value ) }}
+          {{ formatTokens(value) }}
         </b-td>
         <b-td v-else-if="isArrayText(value)">
           {{ value.join(', ') }}
@@ -30,7 +25,7 @@
           <array-field-component :tablefield="value" />
         </b-td>
         <b-td
-          v-else-if="typeof (value) ==='object'"
+          v-else-if="typeof value === 'object'"
           hover
           class="overflow-hidden"
         >
@@ -56,7 +51,25 @@
           </b-tabs>
         </b-td>
         <b-td v-else>
-          {{ addNewLine(value) }}
+          <div
+            v-if="
+              tablefield['@type'] ==
+                '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward'
+            "
+          >
+            <div v-if="name == 'delegator_address'">
+              <router-link :to="`../account/${value}`">{{ value }}</router-link>
+            </div>
+            <div v-else-if="name == 'validator_address'">
+              <router-link :to="`../staking/${value}`">{{ value }}</router-link>
+            </div>
+            <div v-else>
+              {{ addNewLine(value) }}
+            </div>
+          </div>
+          <div v-else>
+            {{ addNewLine(value) }}
+          </div>
         </b-td>
       </b-tr>
     </b-tbody>
@@ -64,11 +77,15 @@
 </template>
 
 <script>
+import { BTableSimple, BTr, BTd, BTabs, BTab, BTbody } from 'bootstrap-vue'
 import {
-  BTableSimple, BTr, BTd, BTabs, BTab, BTbody,
-} from 'bootstrap-vue'
-import {
-  abbr, getStakingValidatorByHex, isHexAddress, isStringArray, isToken, percent, tokenFormatter,
+  abbr,
+  getStakingValidatorByHex,
+  isHexAddress,
+  isStringArray,
+  isToken,
+  percent,
+  tokenFormatter,
 } from '@/libs/data'
 import ArrayFieldComponent from './ArrayFieldComponent.vue'
 
@@ -136,8 +153,10 @@ export default {
 }
 </script>
 
-<style lang='css' scoped>
+<style lang="css" scoped>
 @media (min-width: 768px) {
-  td:first-child { width: 20% ;}
+  td:first-child {
+    width: 20%;
+  }
 }
 </style>

@@ -8,16 +8,17 @@
     class="ml-0 mr-0"
   >
     <template #cell()="data">
-      <span v-if="isTokenField(data.value)">{{ formatTokens(data.value) }}</span>
-      <span v-else-if="isHex(data.value)">{{ formatHexAddress(data.value) }}</span>
+      <span v-if="isTokenField(data.value)"
+        >{{ formatTokens(data.value) }}
+      </span>
+      <span v-else-if="isHex(data.value)"
+        >{{ formatHexAddress(data.value) }}
+      </span>
       <array-field-component
         v-else-if="isArrayText(data.value)"
         :tablefield="eval_value(data.value)"
       />
-      <span
-        v-else
-        :title="data.value"
-      >{{ formatText(data.value) }}</span>
+      <span v-else :title="data.value">{{ formatText(data.value) }}</span>
     </template>
   </b-table>
 </template>
@@ -26,7 +27,12 @@
 import { BTable } from 'bootstrap-vue'
 
 import {
-  getStakingValidatorByHex, isHexAddress, isToken, percent, toDay, tokenFormatter,
+  getStakingValidatorByHex,
+  isHexAddress,
+  isToken,
+  percent,
+  toDay,
+  tokenFormatter,
 } from '@/libs/data/data'
 
 export default {
@@ -42,7 +48,7 @@ export default {
   },
   methods: {
     eval_value(value) {
-      if (typeof (value) === 'string') {
+      if (typeof value === 'string') {
         return JSON.parse(value)
       }
       return value
