@@ -70,6 +70,13 @@
           <br />
           And please please spread out your delegations so that all validators
           get some love :)
+          <b-button
+            variant="primary"
+            class="mr-25 mb-25"
+            @click="show_delegate_modal()"
+          >
+            Delegate
+          </b-button>
         </div>
         <div style="clear: both;" />
       </div>
@@ -366,7 +373,7 @@ export default {
         },
         {
           key: 'commission',
-          formatter: value => `${percent(value.rate)}%`,
+          formatter: (value) => `${percent(value.rate)}%`,
           tdClass: 'text-right',
           thClass: 'text-right',
           sortable: true,
@@ -383,7 +390,7 @@ export default {
   },
   computed: {
     list() {
-      return this.validators.map(x => {
+      return this.validators.map((x) => {
         const xh = x
         const change = this.changes[x.consensus_pubkey.value]
         if (change) {
@@ -398,7 +405,7 @@ export default {
     },
   },
   created() {
-    this.$http.getValidatorListByHeight('latest').then(data => {
+    this.$http.getValidatorListByHeight('latest').then((data) => {
       // Determine starting height, do not go below zero
       let height = Number(data.block_height)
       if (height > 14400) {
@@ -407,7 +414,7 @@ export default {
         height = 1
       }
       const changes = []
-      data.validators.forEach(x => {
+      data.validators.forEach((x) => {
         changes[x.pub_key.value] = {
           latest: Number(x.voting_power),
           previous: 0,
@@ -415,8 +422,8 @@ export default {
       })
 
       // Determine previous powers
-      this.$http.getValidatorListByHeight(height).then(previous => {
-        previous.validators.forEach(x => {
+      this.$http.getValidatorListByHeight(height).then((previous) => {
+        previous.validators.forEach((x) => {
           if (changes[x.pub_key.value]) {
             changes[x.pub_key.value].previous = Number(x.voting_power)
           } else {
@@ -438,14 +445,14 @@ export default {
         lwheight = 1
       }
       const ltchange = []
-      data.validators.forEach(x => {
+      data.validators.forEach((x) => {
         ltchange[x.pub_key.value] = {
           latest: Number(x.voting_power),
           previous: 0,
         }
       })
-      this.$http.getValidatorListByHeight(lwheight).then(previous => {
-        previous.validators.forEach(x => {
+      this.$http.getValidatorListByHeight(lwheight).then((previous) => {
+        previous.validators.forEach((x) => {
           if (ltchange[x.pub_key.value]) {
             ltchange[x.pub_key.value].previous = Number(x.voting_power)
           } else {
@@ -459,11 +466,11 @@ export default {
       })
     })
 
-    this.$http.getStakingParameters().then(res => {
+    this.$http.getStakingParameters().then((res) => {
       this.stakingParameters = res
     })
 
-    this.$http.getValidatorList().then(res => {
+    this.$http.getValidatorList().then((res) => {
       const identities = []
       const temp = res
       let total = 0
@@ -482,11 +489,11 @@ export default {
 
       // fetch avatar from keybase
       let promise = Promise.resolve()
-      identities.forEach(item => {
+      identities.forEach((item) => {
         promise = promise.then(
           () =>
             // eslint-disable-next-line implicit-arrow-linebreak
-            new Promise(resolve => {
+            new Promise((resolve) => {
               this.avatar(item, resolve)
               // eslint-disable-next-line comma-dangle
             })
@@ -772,13 +779,13 @@ export default {
     },
     avatar(identity, resolve) {
       if (this.islive) {
-        keybase(identity).then(d => {
+        keybase(identity).then((d) => {
           resolve()
           if (Array.isArray(d.them) && d.them.length > 0) {
             const pic = d.them[0].pictures
             if (pic) {
               const validator = this.validators.find(
-                u => u.description.identity === identity
+                (u) => u.description.identity === identity
               )
               this.$set(validator, 'avatar', pic.primary.url)
               this.$store.commit('cacheAvatar', {

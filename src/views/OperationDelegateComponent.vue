@@ -13,17 +13,10 @@
       @ok="handleOk"
       @show="loadBalance"
     >
-      <b-overlay
-        :show="!selectedAddress"
-        rounded="sm"
-      >
+      <b-overlay :show="!selectedAddress" rounded="sm">
         <template #overlay>
           <div class="text-center">
-            <b-icon
-              icon="stopwatch"
-              font-scale="3"
-              animation="cylon"
-            />
+            <b-icon icon="stopwatch" font-scale="3" animation="cylon" />
             <p id="cancel-label">
               No available account found.
             </p>
@@ -45,14 +38,11 @@
                   rules="required"
                   name="Validator"
                 >
-                  <b-form-group
-                    label="Validator"
-                    label-for="validator"
-                  >
+                  <b-form-group label="Validator" label-for="validator">
                     <v-select
                       v-model="selectedValidator"
                       :options="valOptions"
-                      :reduce="val => val.value"
+                      :reduce="(val) => val.value"
                       placeholder="Select a validator"
                       :readonly="validatorAddress"
                     />
@@ -63,10 +53,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group
-                  label="Delegator"
-                  label-for="Delegator"
-                >
+                <b-form-group label="Delegator" label-for="Delegator">
                   <validation-provider
                     #default="{ errors }"
                     rules="required"
@@ -79,11 +66,7 @@
                       text-field="label"
                       @change="onChange"
                     />
-                    <b-form-input
-                      v-else
-                      v-model="selectedAddress"
-                      readonly
-                    />
+                    <b-form-input v-else v-model="selectedAddress" readonly />
                     <small class="text-danger">{{ errors[0] }}</small>
                   </validation-provider>
                 </b-form-group>
@@ -91,19 +74,13 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group
-                  label="Available Token"
-                  label-for="Token"
-                >
+                <b-form-group label="Available Token" label-for="Token">
                   <validation-provider
                     #default="{ errors }"
                     rules="required"
                     name="Token"
                   >
-                    <b-form-select
-                      v-model="token"
-                      text-field="label"
-                    >
+                    <b-form-select v-model="token" text-field="label">
                       <b-form-select-option
                         v-for="x in balance"
                         :key="x.denom"
@@ -119,10 +96,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group
-                  label="Amount"
-                  label-for="Amount"
-                >
+                <b-form-group label="Amount" label-for="Amount">
                   <validation-provider
                     v-slot="{ errors }"
                     rules="required|regex:^([0-9\.]+)$"
@@ -132,7 +106,7 @@
                       <b-form-input
                         id="Amount"
                         v-model="amount"
-                        :state="errors.length > 0 ? false:null"
+                        :state="errors.length > 0 ? false : null"
                         placeholder="Input a number"
                         type="number"
                       />
@@ -147,10 +121,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group
-                  label="Fee"
-                  label-for="Fee"
-                >
+                <b-form-group label="Fee" label-for="Fee">
                   <validation-provider
                     v-slot="{ errors }"
                     rules="required|integer"
@@ -185,37 +156,17 @@
             </b-row>
             <b-row v-if="advance">
               <b-col cols="12">
-                <b-form-group
-                  label="Gas"
-                  label-for="gas"
-                >
-                  <validation-provider
-                    v-slot="{ errors }"
-                    name="gas"
-                  >
-                    <b-form-input
-                      id="gas"
-                      v-model="gas"
-                      type="number"
-                    />
+                <b-form-group label="Gas" label-for="gas">
+                  <validation-provider v-slot="{ errors }" name="gas">
+                    <b-form-input id="gas" v-model="gas" type="number" />
                     <small class="text-danger">{{ errors[0] }}</small>
                   </validation-provider>
                 </b-form-group>
               </b-col>
               <b-col cols="12">
-                <b-form-group
-                  label="Memo"
-                  label-for="Memo"
-                >
-                  <validation-provider
-                    v-slot="{ errors }"
-                    name="memo"
-                  >
-                    <b-form-input
-                      id="Memo"
-                      v-model="memo"
-                      max="2"
-                    />
+                <b-form-group label="Memo" label-for="Memo">
+                  <validation-provider v-slot="{ errors }" name="memo">
+                    <b-form-input id="Memo" v-model="memo" max="2" />
                     <small class="text-danger">{{ errors[0] }}</small>
                   </validation-provider>
                 </b-form-group>
@@ -224,10 +175,7 @@
 
             <b-row>
               <b-col>
-                <b-form-group
-                  label="Wallet"
-                  label-for="wallet"
-                >
+                <b-form-group label="Wallet" label-for="wallet">
                   <validation-provider
                     v-slot="{ errors }"
                     rules="required"
@@ -270,21 +218,52 @@
           </b-form>
         </validation-observer>
         {{ error }}
-      </b-overlay></b-modal>
+      </b-overlay></b-modal
+    >
   </div>
 </template>
 
 <script>
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
-  BModal, BRow, BCol, BInputGroup, BFormInput, BFormGroup, BFormSelect, BFormSelectOption,
-  BForm, BFormRadioGroup, BFormRadio, BButton, BInputGroupAppend, BFormCheckbox, BOverlay,
+  BModal,
+  BRow,
+  BCol,
+  BInputGroup,
+  BFormInput,
+  BFormGroup,
+  BFormSelect,
+  BFormSelectOption,
+  BForm,
+  BFormRadioGroup,
+  BFormRadio,
+  BButton,
+  BInputGroupAppend,
+  BFormCheckbox,
+  BOverlay,
 } from 'bootstrap-vue'
 import {
-  required, email, url, between, alpha, integer, password, min, digits, alphaDash, length,
+  required,
+  email,
+  url,
+  between,
+  alpha,
+  integer,
+  password,
+  min,
+  digits,
+  alphaDash,
+  length,
 } from '@validations'
 import {
-  abbrAddress, formatToken, formatTokenDenom, getLocalAccounts, getUnitAmount, setLocalTxHistory, sign, timeIn,
+  abbrAddress,
+  formatToken,
+  formatTokenDenom,
+  getLocalAccounts,
+  getUnitAmount,
+  setLocalTxHistory,
+  sign,
+  timeIn,
 } from '@/libs/data'
 import vSelect from 'vue-select'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -362,11 +341,21 @@ export default {
   },
   computed: {
     valOptions() {
-      return this.validators.map(x => ({ value: x.operator_address, label: `${x.description.moniker} (${Number(x.commission.rate) * 100}%)` }))
+      // CV Shuffle
+      const rando = this.validators.map((x) => ({
+        value: x.operator_address,
+        label: `${x.description.moniker} (${Number(x.commission.rate) * 100}%)`,
+      }))
+      const getRandomValue = (i, N) => Math.floor(Math.random() * (N - i) + i)
+      rando.forEach(
+        (elem, i, arr, j = getRandomValue(i, arr.length)) =>
+          ([arr[i], arr[j]] = [arr[j], arr[i]])
+      )
+      return rando
     },
     feeDenoms() {
       if (!this.balance) return []
-      return this.balance.filter(item => !item.denom.startsWith('ibc'))
+      return this.balance.filter((item) => !item.denom.startsWith('ibc'))
     },
   },
   created() {
@@ -378,22 +367,24 @@ export default {
     },
     onChange() {
       if (this.selectedAddress) {
-        this.$http.getBankBalances(this.selectedAddress).then(res => {
+        this.$http.getBankBalances(this.selectedAddress).then((res) => {
           if (res && res.length > 0) {
             this.balance = res.reverse()
-            const token = this.balance.find(i => !i.denom.startsWith('ibc'))
+            const token = this.balance.find((i) => !i.denom.startsWith('ibc'))
             this.token = token.denom
             if (token) this.feeDenom = token.denom
-            this.balance.filter(i => i.denom.startsWith('ibc')).forEach(x => {
-              if (!this.IBCDenom[x.denom]) {
-                this.$http.getIBCDenomTrace(x.denom).then(denom => {
-                  this.IBCDenom[x.denom] = denom.denom_trace.base_denom
-                })
-              }
-            })
+            this.balance
+              .filter((i) => i.denom.startsWith('ibc'))
+              .forEach((x) => {
+                if (!this.IBCDenom[x.denom]) {
+                  this.$http.getIBCDenomTrace(x.denom).then((denom) => {
+                    this.IBCDenom[x.denom] = denom.denom_trace.base_denom
+                  })
+                }
+              })
           }
         })
-        this.$http.getLatestBlock().then(ret => {
+        this.$http.getLatestBlock().then((ret) => {
           this.chainId = ret.block.header.chain_id
           const notSynced = timeIn(ret.block.header.time, 10, 'm')
           if (notSynced) {
@@ -402,9 +393,10 @@ export default {
             this.error = null
           }
         })
-        this.$http.getAuthAccount(this.selectedAddress).then(ret => {
+        this.$http.getAuthAccount(this.selectedAddress).then((ret) => {
           if (ret.value.base_vesting_account) {
-            this.accountNumber = ret.value.base_vesting_account.base_account.account_number
+            this.accountNumber =
+              ret.value.base_vesting_account.base_account.account_number
             this.sequence = ret.value.base_vesting_account.base_account.sequence
             if (!this.sequence) this.sequence = 0
           } else {
@@ -422,9 +414,16 @@ export default {
       const values = accounts ? Object.values(accounts) : []
       let array = []
       for (let i = 0; i < values.length; i += 1) {
-        const addrs = values[i].address.filter(x => x.chain === this.$route.params.chain)
+        const addrs = values[i].address.filter(
+          (x) => x.chain === this.$route.params.chain
+        )
         if (addrs && addrs.length > 0) {
-          array = array.concat(addrs.map(x => ({ value: x.addr, label: values[i].name.concat(' - ', abbrAddress(x.addr)) })))
+          array = array.concat(
+            addrs.map((x) => ({
+              value: x.addr,
+              label: values[i].name.concat(' - ', abbrAddress(x.addr)),
+            }))
+          )
           if (!this.selectedAddress) {
             this.selectedAddress = addrs[0].addr
           }
@@ -436,7 +435,7 @@ export default {
     loadBalance() {
       this.account = this.computeAccount()
       // if (this.account && this.account.length > 0) this.selectedAddress
-      this.$http.getValidatorList().then(v => {
+      this.$http.getValidatorList().then((v) => {
         this.validators = v
       })
       this.onChange()
@@ -447,9 +446,9 @@ export default {
       bvModalEvt.preventDefault()
       // Trigger submit handler
       // this.handleSubmit()
-      this.$refs.simpleRules.validate().then(ok => {
+      this.$refs.simpleRules.validate().then((ok) => {
         if (ok) {
-          this.sendTx().then(ret => {
+          this.sendTx().then((ret) => {
             // console.log(ret)
             this.error = ret
           })
@@ -464,17 +463,19 @@ export default {
       return formatToken(v, this.IBCDenom)
     },
     async sendTx() {
-      const txMsgs = [{
-        typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
-        value: {
-          delegatorAddress: this.selectedAddress,
-          validatorAddress: this.selectedValidator,
-          amount: {
-            amount: getUnitAmount(this.amount, this.token),
-            denom: this.token,
+      const txMsgs = [
+        {
+          typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+          value: {
+            delegatorAddress: this.selectedAddress,
+            validatorAddress: this.selectedValidator,
+            amount: {
+              amount: getUnitAmount(this.amount, this.token),
+              denom: this.token,
+            },
           },
         },
-      }]
+      ]
 
       if (txMsgs.length === 0) {
         this.error = 'No delegation found'
@@ -508,25 +509,34 @@ export default {
         txMsgs,
         txFee,
         this.memo,
-        signerData,
-      ).then(bodyBytes => {
-        this.$http.broadcastTx(bodyBytes).then(res => {
-          setLocalTxHistory({ op: 'delegate', hash: res.tx_response.txhash, time: new Date() })
-          this.$bvModal.hide('delegate-window')
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Transaction sent!',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
-          })
-        }).catch(e => {
+        signerData
+      )
+        .then((bodyBytes) => {
+          this.$http
+            .broadcastTx(bodyBytes)
+            .then((res) => {
+              setLocalTxHistory({
+                op: 'delegate',
+                hash: res.tx_response.txhash,
+                time: new Date(),
+              })
+              this.$bvModal.hide('delegate-window')
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Transaction sent!',
+                  icon: 'EditIcon',
+                  variant: 'success',
+                },
+              })
+            })
+            .catch((e) => {
+              this.error = e
+            })
+        })
+        .catch((e) => {
           this.error = e
         })
-      }).catch(e => {
-        this.error = e
-      })
       // Send tokens
       // return client.sendTokens(this.address, this.recipient, sendCoins, this.memo)
       return ''
