@@ -1,0 +1,8 @@
+{
+  "chain_name": "ixo",
+  "coingecko": "XO",
+  "api": "https://lcd-impacthub.keplr.app",
+  "sdk_version": "0.44.5",
+  "addr_prefix": "ixo",
+  "logo": "https://dl.airtable.com/.attachments/0ac11dc44f40bf06ffa3f5deaf2b6dae/d024ad6c/IXO.svg"
+}
