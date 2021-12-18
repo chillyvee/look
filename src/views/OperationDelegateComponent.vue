@@ -42,7 +42,7 @@
                     <v-select
                       v-model="selectedValidator"
                       :options="valOptions"
-                      :reduce="(val) => val.value"
+                      :reduce="val => val.value"
                       placeholder="Select a validator"
                       :readonly="validatorAddress"
                     />
@@ -342,7 +342,7 @@ export default {
   computed: {
     valOptions() {
       // CV Shuffle
-      const rando = this.validators.map((x) => ({
+      const rando = this.validators.map(x => ({
         value: x.operator_address,
         label: `${x.description.moniker} (${Number(x.commission.rate) * 100}%)`,
       }))
@@ -355,7 +355,7 @@ export default {
     },
     feeDenoms() {
       if (!this.balance) return []
-      return this.balance.filter((item) => !item.denom.startsWith('ibc'))
+      return this.balance.filter(item => !item.denom.startsWith('ibc'))
     },
   },
   created() {
@@ -367,24 +367,24 @@ export default {
     },
     onChange() {
       if (this.selectedAddress) {
-        this.$http.getBankBalances(this.selectedAddress).then((res) => {
+        this.$http.getBankBalances(this.selectedAddress).then(res => {
           if (res && res.length > 0) {
             this.balance = res.reverse()
-            const token = this.balance.find((i) => !i.denom.startsWith('ibc'))
+            const token = this.balance.find(i => !i.denom.startsWith('ibc'))
             this.token = token.denom
             if (token) this.feeDenom = token.denom
             this.balance
-              .filter((i) => i.denom.startsWith('ibc'))
-              .forEach((x) => {
+              .filter(i => i.denom.startsWith('ibc'))
+              .forEach(x => {
                 if (!this.IBCDenom[x.denom]) {
-                  this.$http.getIBCDenomTrace(x.denom).then((denom) => {
+                  this.$http.getIBCDenomTrace(x.denom).then(denom => {
                     this.IBCDenom[x.denom] = denom.denom_trace.base_denom
                   })
                 }
               })
           }
         })
-        this.$http.getLatestBlock().then((ret) => {
+        this.$http.getLatestBlock().then(ret => {
           this.chainId = ret.block.header.chain_id
           const notSynced = timeIn(ret.block.header.time, 10, 'm')
           if (notSynced) {
@@ -393,7 +393,7 @@ export default {
             this.error = null
           }
         })
-        this.$http.getAuthAccount(this.selectedAddress).then((ret) => {
+        this.$http.getAuthAccount(this.selectedAddress).then(ret => {
           if (ret.value.base_vesting_account) {
             this.accountNumber =
               ret.value.base_vesting_account.base_account.account_number
@@ -415,11 +415,11 @@ export default {
       let array = []
       for (let i = 0; i < values.length; i += 1) {
         const addrs = values[i].address.filter(
-          (x) => x.chain === this.$route.params.chain
+          x => x.chain === this.$route.params.chain
         )
         if (addrs && addrs.length > 0) {
           array = array.concat(
-            addrs.map((x) => ({
+            addrs.map(x => ({
               value: x.addr,
               label: values[i].name.concat(' - ', abbrAddress(x.addr)),
             }))
@@ -435,7 +435,7 @@ export default {
     loadBalance() {
       this.account = this.computeAccount()
       // if (this.account && this.account.length > 0) this.selectedAddress
-      this.$http.getValidatorList().then((v) => {
+      this.$http.getValidatorList().then(v => {
         this.validators = v
       })
       this.onChange()
@@ -446,9 +446,9 @@ export default {
       bvModalEvt.preventDefault()
       // Trigger submit handler
       // this.handleSubmit()
-      this.$refs.simpleRules.validate().then((ok) => {
+      this.$refs.simpleRules.validate().then(ok => {
         if (ok) {
-          this.sendTx().then((ret) => {
+          this.sendTx().then(ret => {
             // console.log(ret)
             this.error = ret
           })
@@ -511,10 +511,10 @@ export default {
         this.memo,
         signerData
       )
-        .then((bodyBytes) => {
+        .then(bodyBytes => {
           this.$http
             .broadcastTx(bodyBytes)
-            .then((res) => {
+            .then(res => {
               setLocalTxHistory({
                 op: 'delegate',
                 hash: res.tx_response.txhash,
@@ -530,11 +530,11 @@ export default {
                 },
               })
             })
-            .catch((e) => {
+            .catch(e => {
               this.error = e
             })
         })
-        .catch((e) => {
+        .catch(e => {
           this.error = e
         })
       // Send tokens
