@@ -1,0 +1,8 @@
+{
+  "chain_name": "cheqd",
+  "coingecko": "",
+  "api": "https://api.cheqd.net/",
+  "sdk_version": "0.44.5",
+  "addr_prefix": "cheqd",
+  "logo": "https://www.cheqd.io/hubfs/cheqd-Icon-orange.png"
+}

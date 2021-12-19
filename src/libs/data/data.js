@@ -341,6 +341,8 @@ export function formatTokenDenom(tokenDenom) {
       denom = 'PHOTON'
     } else if (denom === 'LOKI') {
       denom = 'ODIN'
+    } else if (denom === 'NCHEQ') {
+      denom = 'CHEQ'
     }
 
     return denom
