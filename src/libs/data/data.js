@@ -362,6 +362,10 @@ export function getUnitAmount(amount, denom) {
     // eslint-disable-next-line no-undef
     return String((Number(amount) * 1000000000).toFixed())
   }
+  if (denom.startsWith('ncheq')) {
+    // eslint-disable-next-line no-undef
+    return String((Number(amount) * 1000000000).toFixed())
+  }
   return String((Number(amount) * 1000000).toFixed())
 }
 
@@ -378,6 +382,8 @@ export function formatTokenAmount(tokenAmount, fraction = 2, denom = 'uatom') {
   } else if (denom.startsWith('basecro')) {
     amount = Number(tokenAmount) / 100000000
   } else if (denom.startsWith('nanolike')) {
+    amount = Number(tokenAmount) / 1000000000
+  } else if (denom.startsWith('ncheq')) {
     amount = Number(tokenAmount) / 1000000000
   } else {
     amount = Number(tokenAmount) / 1000000
