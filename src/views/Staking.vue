@@ -13,6 +13,68 @@
         smaller validator. Rapid undelegations will only be recovered up to 1000
         JUNO/3 day rather than trying to fill in the entire undelegation at
         once.
+        <div style="text-align: center; width: 100%">
+          <h1>Want to do something cool for us?</h1>
+          <b-button
+            style="font-size: 2em; width: 60%"
+            variant="primary"
+            @click="
+              show_delegate_modal(
+                'junovaloper1mzqqrctm0hvkghf66jruxjtggd5j447dmugz0j'
+              )
+            "
+          >
+            <img
+              src="/chill360.png"
+              height="175px"
+              vertical-align="text-top"
+              style="float: left; "
+            />
+            <br />
+            Delegate to Chill Validation
+            <br />
+            <br />
+            (We bring you this web site)
+            <br />
+            <br />
+            [ Yes Click Me ] (Thanks! 😉)
+          </b-button>
+        </div>
+        <div style="clear: both;" />
+      </div>
+      <div v-if="stakingParameters.bond_denom == 'uscrt'">
+        For now we allow up to an average 1000 SCRT over a 3 day period per
+        smaller validator. Rapid undelegations will only be recovered up to 1000
+        JUNO/3 day rather than trying to fill in the entire undelegation at
+        once.
+        <div style="text-align: center; width: 100%">
+          <h1>Want to do something cool for us?</h1>
+          <b-button
+            style="font-size: 2em; width: 60%"
+            variant="primary"
+            @click="
+              show_delegate_modal(
+                'secretvaloper14mwwdad00y7lwwmmk3yw2l2qhn6jzjpy28fmfw'
+              )
+            "
+          >
+            <img
+              src="/chill360.png"
+              height="175px"
+              vertical-align="text-top"
+              style="float: left; "
+            />
+            <br />
+            Delegate to Chill Validation
+            <br />
+            <br />
+            (We bring you this web site)
+            <br />
+            <br />
+            [ Yes Click Me ] (Thanks! 😉)
+          </b-button>
+        </div>
+        <div style="clear: both;" />
       </div>
       <div v-if="stakingParameters.bond_denom == 'loki'">
         For now we allow up to an average 1000 ODIN over a 3 day period per
@@ -26,6 +88,7 @@
         HUAHUA/3 day rather than trying to fill in the entire undelegation at
         once.
       </div>
+
       <div v-if="false">
         <div style="text-align: center; width: 100%">
           <h1>Want to do something cool for us?</h1>
@@ -239,18 +302,35 @@
           <!-- Token -->
           <template #cell(changes)="data">
             <small v-if="data.item.changes > 0" class="text-success"
-              >+{{ data.item.changes }}</small
+              >+{{
+                formatVotingPower(
+                  data.item.changes,
+                  stakingParameters.bond_denom
+                )
+              }}</small
             >
             <small v-else-if="data.item.changes === 0">-</small>
-            <small v-else class="text-danger">{{ data.item.changes }}</small>
+            <small v-else class="text-danger">{{
+              formatVotingPower(data.item.changes, stakingParameters.bond_denom)
+            }}</small>
           </template>
           <!-- Token -->
           <template #cell(ltchange)="data">
             <small v-if="data.item.ltchange > 0" class="text-success"
-              >+{{ data.item.ltchange }}</small
+              >+{{
+                formatVotingPower(
+                  data.item.ltchange,
+                  stakingParameters.bond_denom
+                )
+              }}</small
             >
             <small v-else-if="data.item.ltchange === 0">-</small>
-            <small v-else class="text-danger">{{ data.item.ltchange }}</small>
+            <small v-else class="text-danger">{{
+              formatVotingPower(
+                data.item.ltchange,
+                stakingParameters.bond_denom
+              )
+            }}</small>
           </template>
           <!-- Token -->
           <template #cell(operation)="data">
@@ -511,6 +591,15 @@ export default {
     this.islive = false
   },
   methods: {
+    formatVotingPower(amount, denom) {
+      if (amount == 0) {
+        return 0
+      }
+      if (denom == 'ncheq') {
+        return amount / 1000
+      }
+      return amount
+    },
     addHuahuaHack() {
       window.keplr.experimentalSuggestChain({
         chainId: 'chihuahua-1',
@@ -707,8 +796,13 @@ export default {
       return formatToken({ amount, denom }, {}, 0)
     },
     giveLittleMore(data, bond_denom) {
-      console.log('giveLittleMore', data, bond_denom)
+      //console.log('giveLittleMore', data, bond_denom)
       if (bond_denom == 'udig') {
+        if (data.item.description.moniker == 'Chill Validation') {
+          return 999999 * 1e6
+        }
+      }
+      if (bond_denom == 'uscrt') {
         if (data.item.description.moniker == 'Chill Validation') {
           return 999999 * 1e6
         }
@@ -719,7 +813,7 @@ export default {
         Math.min(1000, Math.floor(data.item.delegator_shares / 1e6 / 100)), // At most 1000
         100 // at least 100
       )
-      console.log(data, onepct)
+      //console.log(data, onepct)
 
       if (data.item.ltchange > onepct) {
         // If we already got a lot recently, don't ask for more
