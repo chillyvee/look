@@ -51,8 +51,19 @@ export default {
           denoms.push(x.denom)
         }
         const xh = x
-        const amount = Number(x.amount) / 1000000
-        xh.abbr = amount > 1 ? formatNumber(formatTokenAmount(x.amount, 0, x.denom), true, 2) : amount
+        let amount = Number(x.amount)
+        if (x.denom == 'ncheq') {
+          amount = amount / 1000000000
+          console.log('ncheq', amount)
+        } else {
+          amount = amount / 1000000
+        }
+
+        xh.abbr =
+          amount > 1
+            ? formatNumber(formatTokenAmount(x.amount, 0, x.denom), true, 2)
+            : amount
+        xh.amount = formatTokenAmount(x.amount, 0, x.denom)
         return xh
       })
       // let promise = Promise.resolve()
@@ -77,5 +88,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>
