@@ -158,14 +158,20 @@
       <br />
       <div v-if="stakingParameters.bond_denom == 'udig'">
         <h2>Having a little trouble?</h2>
-        <button @click="addDigHack">
-          Add $DIG to Keplr
-        </button>
-        <b>
-          &lt;-- If you're having trouble delegating, your Keplr might still be
-          on Dig Testnet. Switch to Cosmos, Delete the previous Dig Tesnet, Then
-          add this new one.
+        <b style="background: yellow;">
+          If you're having trouble delegating, your Keplr might still be on Dig
+          Testnet. Switch to Cosmos, Delete the previous Dig Tesnet, Then add
+          this new one.
         </b>
+        <br />
+        <button @click="addDigHackNotional">
+          Add $DIG to Keplr (Official Settings)
+        </button>
+        <br />
+        <button @click="addDigHack">
+          Add $DIG to Keplr (via Chill Validation) - Use this if the official
+          isn't working for some reason
+        </button>
         <br />
         Alternate Method: Use another Chrome profile, Install Keplr, Import your
         account, and add this Dig Network (to avoid disturbing your current
@@ -649,8 +655,8 @@ export default {
     },
     addDigHack() {
       window.keplr.experimentalSuggestChain({
-        chainId: 'dig',
-        chainName: 'DIG',
+        chainId: 'dig-1',
+        chainName: 'Dig (via Chill)',
         rpc: 'https://digrpc.chillvalidation.com',
         rest: 'https://digapi.chillvalidation.com',
         bip44: {
@@ -663,6 +669,53 @@ export default {
           bech32PrefixValPub: 'dig' + 'valoperpub',
           bech32PrefixConsAddr: 'dig' + 'valcons',
           bech32PrefixConsPub: 'dig' + 'valconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'DIG',
+            coinMinimalDenom: 'udig',
+            coinDecimals: 6,
+            coinGeckoId: 'DIG',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'DIG',
+            coinMinimalDenom: 'udig',
+            coinDecimals: 6,
+            coinGeckoId: 'DIG',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'DIG',
+          coinMinimalDenom: 'udig',
+          coinDecimals: 6,
+          coinGeckoId: 'DIG',
+        },
+        coinType: 118,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      })
+    },
+    addDigHackNotional() {
+      window.keplr.experimentalSuggestChain({
+        chainId: 'dig',
+        chainName: 'DIG',
+        rpc: 'https://rpc-1-dig.notional.ventures',
+        rest: 'https://api-1-dig.notional.ventures',
+        bip44: {
+          coinType: 118,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'dig',
+          bech32PrefixAccPub: 'digpub',
+          bech32PrefixValAddr: 'digvaloper',
+          bech32PrefixValPub: 'digvaloperpub',
+          bech32PrefixConsAddr: 'digvalcons',
+          bech32PrefixConsPub: 'digvalconspub',
         },
         currencies: [
           {
