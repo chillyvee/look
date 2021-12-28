@@ -649,8 +649,8 @@ export default {
     },
     addDigHack() {
       window.keplr.experimentalSuggestChain({
-        chainId: 'dig-1',
-        chainName: 'Dig',
+        chainId: 'dig',
+        chainName: 'DIG',
         rpc: 'https://digrpc.chillvalidation.com',
         rest: 'https://digapi.chillvalidation.com',
         bip44: {
@@ -666,31 +666,31 @@ export default {
         },
         currencies: [
           {
-            coinDenom: 'DIG',
+            coinDenom: 'dig',
             coinMinimalDenom: 'udig',
             coinDecimals: 6,
-            coinGeckoId: 'DIG',
+            coinGeckoId: 'dig',
           },
         ],
         feeCurrencies: [
           {
-            coinDenom: 'DIG',
+            coinDenom: 'dig',
             coinMinimalDenom: 'udig',
             coinDecimals: 6,
-            coinGeckoId: 'DIG',
+            coinGeckoId: 'dig',
           },
         ],
         stakeCurrency: {
-          coinDenom: 'DIG',
+          coinDenom: 'dig',
           coinMinimalDenom: 'udig',
           coinDecimals: 6,
-          coinGeckoId: 'DIG',
+          coinGeckoId: 'dig',
         },
         coinType: 118,
         gasPriceStep: {
-          low: 0.025,
-          average: 0.035,
-          high: 0.04,
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
         },
       })
     },
