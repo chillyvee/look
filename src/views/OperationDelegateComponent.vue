@@ -341,8 +341,20 @@ export default {
   },
   computed: {
     valOptions() {
+      // CV skip list if no data yet
+      if (this.validators.length == 0) return []
+
+      // CV remove validators in violation
+      // console.log('rando vals', this.validators, this)
+      var that = this
+      const okvalidators = this.validators.filter((e, i, a) => {
+        //console.log('eia', e, i, a)
+        return false == that.naughty(e, i, a)
+      })
+
       // CV Shuffle
-      const rando = this.validators.map(x => ({
+      //const rando = this.validators.map(x => ({
+      const rando = okvalidators.map(x => ({
         value: x.operator_address,
         label: `${x.description.moniker} (${Number(x.commission.rate) * 100}%)`,
       }))
@@ -351,6 +363,8 @@ export default {
         (elem, i, arr, j = getRandomValue(i, arr.length)) =>
           ([arr[i], arr[j]] = [arr[j], arr[i]])
       )
+
+      //console.log('rando', rando)
       return rando
     },
     feeDenoms() {
@@ -362,6 +376,19 @@ export default {
     // console.log('address: ', this.address)
   },
   methods: {
+    naughty(valinfo, i, a) {
+      // CV Detect naughty validators
+      //console.log('naughty', valinfo, i, a)
+      if (valinfo == undefined) {
+        return false
+      }
+      if (valinfo.operator_address.startsWith('chihuahuavaloper')) {
+        if (valinfo.commission.rate < 0.05) {
+          return true
+        }
+      }
+      return false
+    },
     printDenom() {
       return formatTokenDenom(this.IBCDenom[this.token] || this.token)
     },

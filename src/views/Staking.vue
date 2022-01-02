@@ -288,7 +288,17 @@
                 </b-avatar>
               </template>
               <span class="font-weight-bolder d-block text-nowrap">
-                <router-link :to="`./staking/${data.item.operator_address}`">
+                <div v-if="naughty(data) == true">
+                  <span style="font-size: 6pt">{{
+                    data.item.operator_address
+                  }}</span>
+                  <br />
+                  (Violation)
+                </div>
+                <router-link
+                  :to="`./staking/${data.item.operator_address}`"
+                  v-if="naughty(data) == false"
+                >
                   {{ data.item.description.moniker }}
                 </router-link>
               </span>
@@ -345,7 +355,8 @@
           </template>
           <!-- Token -->
           <template #cell(operation)="data">
-            <div v-if="rankSoFar(data) == 'primary'">
+            <div v-if="naughty(data)">Violation</div>
+            <div v-else-if="rankSoFar(data) == 'primary'">
               <div
                 v-if="giveLittleMore(data, stakingParameters.bond_denom) > 0"
               >
@@ -602,6 +613,22 @@ export default {
     this.islive = false
   },
   methods: {
+    naughty(data) {
+      /*
+      if (
+        data.item.operator_address ==
+        'chihuahuavaloper1ju6mkyxpjsdcmrw0pnx6sd4zu4wywkmhtgnpr5'
+      ) {
+        console.log('naughty', data)
+      }
+         */
+      if (data.item.operator_address.startsWith('chihuahuavaloper')) {
+        if (data.item.commission.rate < 0.05) {
+          return true
+        }
+      }
+      return false
+    },
     formatVotingPower(amount, denom) {
       if (amount == 0) {
         return 0
