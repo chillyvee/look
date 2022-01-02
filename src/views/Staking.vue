@@ -1,6 +1,7 @@
 <template>
   <div :class="stakingParameters.bond_denom">
     <div>
+      <h2>Introduction</h2>
       This is a slightly modified from based on Ping.pub. The idea is to provide
       a daily boost to each validator in the lowest 33%.
       <br />
@@ -87,6 +88,58 @@
         smaller validator. Rapid undelegations will only be recovered up to 1000
         HUAHUA/3 day rather than trying to fill in the entire undelegation at
         once.
+        <br />
+        <br />
+        <h2 name="violation" style="background: yellow">
+          Chihuahua - Delegation Notes
+        </h2>
+        For Chihuahua,
+        <a
+          href="https://look.chillvalidation.com/chihuahua/gov/1"
+          target="_blank"
+          >Governance #1</a
+        >
+        has been passed, setting a minimum commission rate of 5%. Chill
+        Validation indicates below where Validators are in violation of this
+        agreement. The delegation interface for these validators has been
+        disabled until they come back into compliance. You might find it a risk
+        to delegate to a validator that doesn't care about network governance
+        anyways.
+        <br />
+        <br />
+        See below for great ideas of who to delegate to.
+        <br />
+        <br />
+        To directly delegate to your favorite responsible validator, use this
+        button.
+        <b-button
+          variant="primary"
+          class="mr-25 mb-25"
+          @click="show_delegate_modal()"
+        >
+          Delegate
+        </b-button>
+        <br />
+        <br />
+        <b style="background:yellow">
+          We are
+          <img
+            src="https://s3.amazonaws.com/keybase_processed_uploads/f0238d018c8256e54e8109406786e505_360_360.jpg"
+            height="30px"
+          />
+          Chill Validation</b
+        >
+        and we bring you this website.
+        <b style="background:yellow"
+          >We are one of the only Validators providing an interface encouraging
+          diversification</b
+        >
+        of delegations to help ensure decentralization and reduce network risk.
+        <br />
+        <br />
+        This benefits you as a delegator and other validators who are trying
+        hard to grow. If you have some $HUAHUA to spare, please delegate "some"
+        to Chill Validation to support us, but also remember delegate to others!
       </div>
 
       <div v-if="false">
@@ -293,7 +346,7 @@
                     data.item.operator_address
                   }}</span>
                   <br />
-                  (Violation)
+                  <a href="#top">(Violation)</a>
                 </div>
                 <router-link
                   :to="`./staking/${data.item.operator_address}`"
@@ -355,7 +408,7 @@
           </template>
           <!-- Token -->
           <template #cell(operation)="data">
-            <div v-if="naughty(data)">Violation</div>
+            <div v-if="naughty(data)"><a href="#top">*Violation</a></div>
             <div v-else-if="rankSoFar(data) == 'primary'">
               <div
                 v-if="giveLittleMore(data, stakingParameters.bond_denom) > 0"
