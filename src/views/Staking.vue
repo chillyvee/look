@@ -177,6 +177,11 @@
         account, and add this Dig Network (to avoid disturbing your current
         Keplr settings)
       </div>
+      <div v-if="stakingParameters.bond_denom == 'ubtsg'">
+        <button @click="addBitsongHack639">
+          Add $BTSG to Keplr
+        </button>
+      </div>
       <div v-if="stakingParameters.bond_denom == 'uhuahua'">
         <button @click="addHuahuaHack">
           Add $HUAHUA to Keplr
@@ -839,6 +844,49 @@ export default {
           average: 0.025,
           high: 0.03,
         },
+      })
+    },
+    addBitsongHack639() {
+      window.keplr.experimentalSuggestChain({
+        chainId: 'bitsong-2b',
+        chainName: 'BitSong',
+        rpc: 'https://rpc.explorebitsong.com',
+        rest: 'https://lcd.explorebitsong.com',
+        bip44: {
+          coinType: 639,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'bitsong',
+          bech32PrefixAccPub: 'bitsongpub',
+          bech32PrefixValAddr: 'bitsongvaloper',
+          bech32PrefixValPub: 'bitsongvaloperpub',
+          bech32PrefixConsAddr: 'bitsongvalcons',
+          bech32PrefixConsPub: 'bitsongvalconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'BTSG',
+            coinMinimalDenom: 'ubtsg',
+            coinDecimals: 6,
+            coinGeckoId: 'bitsong',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'BTSG',
+            coinMinimalDenom: 'ubtsg',
+            coinDecimals: 6,
+            coinGeckoId: 'bitsong',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'BTSG',
+          coinMinimalDenom: 'ubtsg',
+          coinDecimals: 6,
+          coinGeckoId: 'bitsong',
+        },
+        coinType: 639,
+        features: ['stargate', 'ibc-transfer'],
       })
     },
     selectValidator(da) {
