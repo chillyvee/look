@@ -219,12 +219,12 @@ export default {
       memo: '',
       fee: '800',
       feeDenom: '',
-      wallet: 'ledgerUSB',
+      wallet: 'keplr',
       error: null,
       sequence: 1,
       accountNumber: 0,
       gas: '200000',
-      advance: false,
+      advance: true,
 
       required,
       password,
@@ -296,6 +296,17 @@ export default {
       }
       this.$http.getStakingDelegations(this.address).then(res => {
         this.delegations = res.delegation_responses
+// CV Adjust gas and fees but only for dig
+if (this.chainId == "dig-1") {
+	// console.log("dig-1 dynamic gas: ", this.delegations.length)
+	this.fee = 2000 * this.delegations.length
+	this.gas = 100000 * this.delegations.length
+} else {
+}
+	if (this.gas < 200000) {
+		this.gas = 200000
+	}
+
       })
     },
     handleOk(bvModalEvt) {
