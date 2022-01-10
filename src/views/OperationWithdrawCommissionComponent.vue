@@ -7,7 +7,6 @@
       title="Withdraw Validator Commission"
       hide-header-close
       scrollable
-
       :ok-disabled="!address"
       @hidden="resetModal"
       @ok="handleOk"
@@ -17,25 +16,16 @@
         <b-form>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Sender"
-                label-for="Account"
-              >
+              <b-form-group label="Sender" label-for="Account">
                 <b-input-group class="mb-25">
-                  <b-form-input
-                    :value="address"
-                    readonly
-                  />
+                  <b-form-input :value="address" readonly />
                 </b-input-group>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Fee"
-                label-for="Fee"
-              >
+              <b-form-group label="Fee" label-for="Fee">
                 <validation-provider
                   v-slot="{ errors }"
                   rules="required|integer"
@@ -58,11 +48,7 @@
             </b-col>
             <b-col cols="12">
               <b-form-group>
-                <b-form-checkbox
-                  v-model="advance"
-                  name="advance"
-                  value="true"
-                >
+                <b-form-checkbox v-model="advance" name="advance" value="true">
                   <small>Advance</small>
                 </b-form-checkbox>
               </b-form-group>
@@ -70,37 +56,17 @@
           </b-row>
           <b-row v-if="advance">
             <b-col cols="12">
-              <b-form-group
-                label="Gas"
-                label-for="gas"
-              >
-                <validation-provider
-                  v-slot="{ errors }"
-                  name="gas"
-                >
-                  <b-form-input
-                    id="gas"
-                    v-model="gas"
-                    type="number"
-                  />
+              <b-form-group label="Gas" label-for="gas">
+                <validation-provider v-slot="{ errors }" name="gas">
+                  <b-form-input id="gas" v-model="gas" type="number" />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
               </b-form-group>
             </b-col>
             <b-col cols="12">
-              <b-form-group
-                label="Memo"
-                label-for="Memo"
-              >
-                <validation-provider
-                  v-slot="{ errors }"
-                  name="memo"
-                >
-                  <b-form-input
-                    id="Memo"
-                    v-model="memo"
-                    max="2"
-                  />
+              <b-form-group label="Memo" label-for="Memo">
+                <validation-provider v-slot="{ errors }" name="memo">
+                  <b-form-input id="Memo" v-model="memo" max="2" />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
               </b-form-group>
@@ -108,10 +74,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Wallet"
-                label-for="wallet"
-              >
+              <b-form-group label="Wallet" label-for="wallet">
                 <validation-provider
                   v-slot="{ errors }"
                   rules="required"
@@ -161,15 +124,33 @@
 <script>
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
-  BModal, BRow, BCol, BInputGroup, BFormInput, BFormGroup, BFormSelect, BFormCheckbox,
-  BForm, BFormRadioGroup, BFormRadio, BInputGroupAppend,
+  BModal,
+  BRow,
+  BCol,
+  BInputGroup,
+  BFormInput,
+  BFormGroup,
+  BFormSelect,
+  BFormCheckbox,
+  BForm,
+  BFormRadioGroup,
+  BFormRadio,
+  BInputGroupAppend,
 } from 'bootstrap-vue'
 import {
-  required, email, url, between, alpha, integer, password, min, digits, alphaDash, length,
+  required,
+  email,
+  url,
+  between,
+  alpha,
+  integer,
+  password,
+  min,
+  digits,
+  alphaDash,
+  length,
 } from '@validations'
-import {
-  formatToken, setLocalTxHistory, sign, timeIn,
-} from '@/libs/data'
+import { formatToken, setLocalTxHistory, sign, timeIn } from '@/libs/data'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 export default {
@@ -242,7 +223,6 @@ export default {
     // console.log('address: ', this.address)
   },
   methods: {
-
     loadBalance() {
       this.$http.getBankBalances(this.address).then(res => {
         if (res && res.length > 0) {
@@ -260,7 +240,8 @@ export default {
       })
       this.$http.getAuthAccount(this.address).then(ret => {
         if (ret.value.base_vesting_account) {
-          this.accountNumber = ret.value.base_vesting_account.base_account.account_number
+          this.accountNumber =
+            ret.value.base_vesting_account.base_account.account_number
           this.sequence = ret.value.base_vesting_account.base_account.sequence
           if (!this.sequence) this.sequence = 0
         } else {
@@ -268,6 +249,13 @@ export default {
           this.sequence = ret.value.sequence ? ret.value.sequence : 0
         }
       })
+      // CV Adjust gas and fees but only for specific networks
+      if (this.$store.state.chains.selected.chain_name == 'comdex') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        this.fee = 5000
+        this.gas = 200000
+      } else {
+      }
     },
     handleOk(bvModalEvt) {
       // console.log('send')
@@ -295,8 +283,10 @@ export default {
             delegatorAddress: this.address,
             validatorAddress: this.validatorAddress,
           },
-        }, {
-          typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
+        },
+        {
+          typeUrl:
+            '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
           value: {
             validatorAddress: this.validatorAddress,
           },
@@ -335,25 +325,34 @@ export default {
         txMsgs,
         txFee,
         this.memo,
-        signerData,
-      ).then(bodyBytes => {
-        this.$http.broadcastTx(bodyBytes, this.selectedChain).then(res => {
-          setLocalTxHistory({ op: 'withdraw', hash: res.tx_response.txhash, time: new Date() })
-          this.$bvModal.hide('withdraw-commission-window')
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Transaction sent!',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
-          })
-        }).catch(e => {
+        signerData
+      )
+        .then(bodyBytes => {
+          this.$http
+            .broadcastTx(bodyBytes, this.selectedChain)
+            .then(res => {
+              setLocalTxHistory({
+                op: 'withdraw',
+                hash: res.tx_response.txhash,
+                time: new Date(),
+              })
+              this.$bvModal.hide('withdraw-commission-window')
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Transaction sent!',
+                  icon: 'EditIcon',
+                  variant: 'success',
+                },
+              })
+            })
+            .catch(e => {
+              this.error = e
+            })
+        })
+        .catch(e => {
           this.error = e
         })
-      }).catch(e => {
-        this.error = e
-      })
       // Send tokens
       // return client.sendTokens(this.address, this.recipient, sendCoins, this.memo)
       return ''

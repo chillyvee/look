@@ -17,14 +17,11 @@
         <b-form>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Sender"
-                label-for="sender"
-              >
+              <b-form-group label="Sender" label-for="sender">
                 <b-input-group class="mb-25">
                   <b-input-group-prepend is-text>
                     <b-avatar
-                      :src="account?account.logo:''"
+                      :src="account ? account.logo : ''"
                       size="18"
                       variant="light-primary"
                       rounded
@@ -32,7 +29,7 @@
                   </b-input-group-prepend>
                   <b-form-input
                     name="sender"
-                    :value="account?account.addr:address"
+                    :value="account ? account.addr : address"
                     readonly
                   />
                 </b-input-group>
@@ -41,10 +38,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Recipient"
-                label-for="Recipient"
-              >
+              <b-form-group label="Recipient" label-for="Recipient">
                 <validation-provider
                   #default="{ errors }"
                   rules="required"
@@ -54,7 +48,7 @@
                     <b-form-input
                       id="Recipient"
                       v-model="recipient"
-                      :state="errors.length > 0 ? false:null"
+                      :state="errors.length > 0 ? false : null"
                     />
                   </b-input-group>
                   <small class="text-danger">{{ errors[0] }}</small>
@@ -64,18 +58,13 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Available Token"
-                label-for="Token"
-              >
+              <b-form-group label="Available Token" label-for="Token">
                 <validation-provider
                   #default="{ errors }"
                   rules="required"
                   name="Token"
                 >
-                  <b-form-select
-                    v-model="token"
-                  >
+                  <b-form-select v-model="token">
                     <b-form-select-option
                       v-for="item in balance"
                       :key="item.denom"
@@ -91,10 +80,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Amount"
-                label-for="Amount"
-              >
+              <b-form-group label="Amount" label-for="Amount">
                 <validation-provider
                   v-slot="{ errors }"
                   rules="required|regex:^([0-9\.]+)$"
@@ -104,7 +90,7 @@
                     <b-form-input
                       id="Amount"
                       v-model="amount"
-                      :state="errors.length > 0 ? false:null"
+                      :state="errors.length > 0 ? false : null"
                       placeholder="Input a number"
                       type="number"
                     />
@@ -119,10 +105,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group
-                label="Fee"
-                label-for="Fee"
-              >
+              <b-form-group label="Fee" label-for="Fee">
                 <validation-provider
                   v-slot="{ errors }"
                   rules="required|integer"
@@ -145,11 +128,7 @@
             </b-col>
             <b-col cols="12">
               <b-form-group>
-                <b-form-checkbox
-                  v-model="advance"
-                  name="advance"
-                  value="true"
-                >
+                <b-form-checkbox v-model="advance" name="advance" value="true">
                   <small>Advance</small>
                 </b-form-checkbox>
               </b-form-group>
@@ -157,37 +136,17 @@
           </b-row>
           <b-row v-if="advance">
             <b-col cols="12">
-              <b-form-group
-                label="Gas"
-                label-for="gas"
-              >
-                <validation-provider
-                  v-slot="{ errors }"
-                  name="gas"
-                >
-                  <b-form-input
-                    id="gas"
-                    v-model="gas"
-                    type="number"
-                  />
+              <b-form-group label="Gas" label-for="gas">
+                <validation-provider v-slot="{ errors }" name="gas">
+                  <b-form-input id="gas" v-model="gas" type="number" />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
               </b-form-group>
             </b-col>
             <b-col cols="12">
-              <b-form-group
-                label="Memo"
-                label-for="Memo"
-              >
-                <validation-provider
-                  v-slot="{ errors }"
-                  name="memo"
-                >
-                  <b-form-input
-                    id="Memo"
-                    v-model="memo"
-                    max="2"
-                  />
+              <b-form-group label="Memo" label-for="Memo">
+                <validation-provider v-slot="{ errors }" name="memo">
+                  <b-form-input id="Memo" v-model="memo" max="2" />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
               </b-form-group>
@@ -196,10 +155,7 @@
 
           <b-row>
             <b-col>
-              <b-form-group
-                label="Wallet"
-                label-for="wallet"
-              >
+              <b-form-group label="Wallet" label-for="wallet">
                 <validation-provider
                   v-slot="{ errors }"
                   rules="required"
@@ -249,14 +205,44 @@
 <script>
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
-  BModal, BRow, BCol, BInputGroup, BInputGroupAppend, BFormInput, BAvatar, BFormGroup, BFormSelect, BFormSelectOption,
-  BForm, BFormRadioGroup, BFormRadio, BInputGroupPrepend, BFormCheckbox,
+  BModal,
+  BRow,
+  BCol,
+  BInputGroup,
+  BInputGroupAppend,
+  BFormInput,
+  BAvatar,
+  BFormGroup,
+  BFormSelect,
+  BFormSelectOption,
+  BForm,
+  BFormRadioGroup,
+  BFormRadio,
+  BInputGroupPrepend,
+  BFormCheckbox,
 } from 'bootstrap-vue'
 import {
-  required, email, url, between, alpha, integer, password, min, digits, alphaDash, length,
+  required,
+  email,
+  url,
+  between,
+  alpha,
+  integer,
+  password,
+  min,
+  digits,
+  alphaDash,
+  length,
 } from '@validations'
 import {
-  formatToken, formatTokenDenom, getLocalAccounts, getLocalChains, getUnitAmount, setLocalTxHistory, sign, timeIn,
+  formatToken,
+  formatTokenDenom,
+  getLocalAccounts,
+  getLocalChains,
+  getUnitAmount,
+  setLocalTxHistory,
+  sign,
+  timeIn,
 } from '@/libs/data'
 import { Cosmos } from '@cosmostation/cosmosjs'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -353,22 +339,31 @@ export default {
     },
     loadBalance() {
       this.account = this.computeAccount()
-      if (this.account && this.account.length > 0) this.address = this.account[0].addr
+      if (this.account && this.account.length > 0)
+        this.address = this.account[0].addr
       if (this.address) {
-        this.$http.getBankBalances(this.address, this.selectedChain).then(res => {
-          if (res && res.length > 0) {
-            this.balance = res.reverse()
-            this.token = this.balance[0].denom
-            this.feeDenom = this.balance.find(x => !x.denom.startsWith('ibc')).denom
-            this.balance.filter(i => i.denom.startsWith('ibc')).forEach(x => {
-              if (!this.IBCDenom[x.denom]) {
-                this.$http.getIBCDenomTrace(x.denom, this.selectedChain).then(denom => {
-                  this.IBCDenom[x.denom] = denom.denom_trace.base_denom
+        this.$http
+          .getBankBalances(this.address, this.selectedChain)
+          .then(res => {
+            if (res && res.length > 0) {
+              this.balance = res.reverse()
+              this.token = this.balance[0].denom
+              this.feeDenom = this.balance.find(
+                x => !x.denom.startsWith('ibc')
+              ).denom
+              this.balance
+                .filter(i => i.denom.startsWith('ibc'))
+                .forEach(x => {
+                  if (!this.IBCDenom[x.denom]) {
+                    this.$http
+                      .getIBCDenomTrace(x.denom, this.selectedChain)
+                      .then(denom => {
+                        this.IBCDenom[x.denom] = denom.denom_trace.base_denom
+                      })
+                  }
                 })
-              }
-            })
-          }
-        })
+            }
+          })
         this.$http.getLatestBlock(this.selectedChain).then(ret => {
           this.chainId = ret.block.header.chain_id
           const notSynced = timeIn(ret.block.header.time, 10, 'm')
@@ -378,16 +373,27 @@ export default {
             this.error = null
           }
         })
-        this.$http.getAuthAccount(this.address, this.selectedChain).then(ret => {
-          if (ret.value.base_vesting_account) {
-            this.accountNumber = ret.value.base_vesting_account.base_account.account_number
-            this.sequence = ret.value.base_vesting_account.base_account.sequence
-            if (!this.sequence) this.sequence = 0
-          } else {
-            this.accountNumber = ret.value.account_number
-            this.sequence = ret.value.sequence ? ret.value.sequence : 0
-          }
-        })
+        this.$http
+          .getAuthAccount(this.address, this.selectedChain)
+          .then(ret => {
+            if (ret.value.base_vesting_account) {
+              this.accountNumber =
+                ret.value.base_vesting_account.base_account.account_number
+              this.sequence =
+                ret.value.base_vesting_account.base_account.sequence
+              if (!this.sequence) this.sequence = 0
+            } else {
+              this.accountNumber = ret.value.account_number
+              this.sequence = ret.value.sequence ? ret.value.sequence : 0
+            }
+          })
+      }
+      // CV Adjust gas and fees but only for specific networks
+      if (this.$store.state.chains.selected.chain_name == 'comdex') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        this.fee = 5000
+        this.gas = 200000
+      } else {
       }
     },
     handleOk(bvModalEvt) {
@@ -452,25 +458,34 @@ export default {
         txMsgs,
         txFee,
         this.memo,
-        signerData,
-      ).then(bodyBytes => {
-        this.$http.broadcastTx(bodyBytes, this.selectedChain).then(res => {
-          setLocalTxHistory({ op: 'send', hash: res.txhash, time: new Date() })
-          this.$bvModal.hide('transfer-window')
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Transaction sent!',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
-          })
-        }).catch(e => {
+        signerData
+      )
+        .then(bodyBytes => {
+          this.$http
+            .broadcastTx(bodyBytes, this.selectedChain)
+            .then(res => {
+              setLocalTxHistory({
+                op: 'send',
+                hash: res.txhash,
+                time: new Date(),
+              })
+              this.$bvModal.hide('transfer-window')
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Transaction sent!',
+                  icon: 'EditIcon',
+                  variant: 'success',
+                },
+              })
+            })
+            .catch(e => {
+              this.error = e
+            })
+        })
+        .catch(e => {
           this.error = e
         })
-      }).catch(e => {
-        this.error = e
-      })
       // Send tokens
       // return client.sendTokens(this.address, this.recipient, sendCoins, this.memo)
       return ''
