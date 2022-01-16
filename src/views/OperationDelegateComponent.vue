@@ -319,7 +319,7 @@ export default {
       memo: '',
       fee: '800',
       feeDenom: '',
-      wallet: 'ledgerUSB',
+      wallet: 'keplr',
       error: null,
       sequence: 1,
       accountNumber: 0,
@@ -468,7 +468,11 @@ export default {
       this.onChange()
 
       // CV Adjust gas and fees but only for specific networks
-      if (this.$store.state.chains.selected.chain_name == 'comdex') {
+      if (this.chainId == 'dig-1') {
+        console.log("dig-1 dynamic gas: ", this.delegations.length)
+        this.fee = 2000
+        this.gas = 200000
+      } else if (this.$store.state.chains.selected.chain_name == 'comdex') {
         // console.log("dig-1 dynamic gas: ", this.delegations.length)
         this.fee = 5000
         this.gas = 200000

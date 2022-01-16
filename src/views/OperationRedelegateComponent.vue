@@ -282,7 +282,7 @@ export default {
       memo: '',
       fee: '800',
       feeDenom: '',
-      wallet: 'ledgerUSB',
+      wallet: 'keplr',
       error: null,
       sequence: 1,
       accountNumber: 0,
