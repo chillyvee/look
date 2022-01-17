@@ -250,7 +250,11 @@ export default {
         }
       })
       // CV Adjust gas and fees but only for specific networks
-      if (this.$store.state.chains.selected.chain_name == 'comdex') {
+      if (this.$store.state.chains.selected.chain_name == 'dig') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        this.fee = 200
+        this.gas = 200000
+      } else if (this.$store.state.chains.selected.chain_name == 'comdex') {
         // console.log("dig-1 dynamic gas: ", this.delegations.length)
         this.fee = 5000
         this.gas = 200000
