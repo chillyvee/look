@@ -231,13 +231,28 @@ export default {
           if (token) this.feeDenom = token.denom
         }
       })
-      this.$http.getLatestBlock().then(ret => {
-        this.chainId = ret.block.header.chain_id
-        const notSynced = timeIn(ret.block.header.time, 10, 'm')
-        if (notSynced) {
-          this.error = 'Client is not synced or blockchain is halted'
-        }
-      })
+      this.$http
+        .getLatestBlock()
+        .then(ret => {
+          this.chainId = ret.block.header.chain_id
+          const notSynced = timeIn(ret.block.header.time, 10, 'm')
+          if (notSynced) {
+            this.error = 'Client is not synced or blockchain is halted'
+          }
+        })
+        .then(x => {
+          // CV Adjust gas and fees but only for specific networks
+          if (this.chainId == 'dig-1') {
+            console.log('dig-1 dynamic gas: ', this.delegations.length)
+            this.fee = 2000
+            this.gas = 200000
+          } else if (this.chainId == 'comdex-1') {
+            console.log('comdex-1 dynamic gas: ', this.delegations.length)
+            this.fee = 5000
+            this.gas = 200000
+          }
+        })
+
       this.$http.getAuthAccount(this.address).then(ret => {
         if (ret.value.base_vesting_account) {
           this.accountNumber =
@@ -249,17 +264,6 @@ export default {
           this.sequence = ret.value.sequence ? ret.value.sequence : 0
         }
       })
-      // CV Adjust gas and fees but only for specific networks
-      if (this.$store.state.chains.selected.chain_name == 'dig') {
-        // console.log("dig-1 dynamic gas: ", this.delegations.length)
-        this.fee = 200
-        this.gas = 200000
-      } else if (this.$store.state.chains.selected.chain_name == 'comdex') {
-        // console.log("dig-1 dynamic gas: ", this.delegations.length)
-        this.fee = 5000
-        this.gas = 200000
-      } else {
-      }
     },
     handleOk(bvModalEvt) {
       // console.log('send')

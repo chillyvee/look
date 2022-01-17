@@ -4,5 +4,5 @@
   "api": "https://api-1-dig.notional.ventures",
   "sdk_version": "0.44.5",
   "addr_prefix": "dig",
-  "logo": "https://digchain.org/wp-content/uploads/2018/09/DIG.png"
+  "logo": "/logos/dig.png"
 }
