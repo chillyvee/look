@@ -279,6 +279,24 @@
           allowfullscreen
         ></iframe>
       </div>
+      <div v-if="stakingParameters.bond_denom == 'udsm'">
+        <b>Desmos is officially cointype 852</b>
+        <h2>
+          <font color="red">
+            Rescue Information for Desmos Coin Type 118
+            <br />
+            Changing CoinType only seems to work on a fresh install of Keplr.
+            Make a new Chrome Profile, Install Keplr, Then add the Hack Coin
+            Type below on your fresh Keplr to use it.
+          </font>
+        </h2>
+        <button @click="addDesmos(118)">
+          Add Desmos 118 (HACK)
+        </button>
+        <button @click="addDesmos(852)">
+          Add Desmos 852 (Official)
+        </button>
+      </div>
     </div>
     <b-card no-body>
       <b-card-header class="d-flex justify-content-between">
@@ -690,6 +708,54 @@ export default {
         return amount / 1000
       }
       return amount
+    },
+    addDesmos(ct) {
+      console.log('addDesmos ct: ', ct)
+      window.keplr.experimentalSuggestChain({
+        chainId: 'desmos-mainnet',
+        chainName: `Desmos v3CT${ct}`,
+        rpc: 'https://api.mainnet.desmos.network',
+        rest: 'https://api.mainnet.desmos.network',
+        bip44: {
+          coinType: ct,
+        },
+        bech32Config: {
+          bech32PrefixAccAddr: 'desmos',
+          bech32PrefixAccPub: 'desmos' + 'pub',
+          bech32PrefixValAddr: 'desmos' + 'valoper',
+          bech32PrefixValPub: 'desmos' + 'valoperpub',
+          bech32PrefixConsAddr: 'desmos' + 'valcons',
+          bech32PrefixConsPub: 'desmos' + 'valconspub',
+        },
+        currencies: [
+          {
+            coinDenom: 'DSM',
+            coinMinimalDenom: 'udsm',
+            coinDecimals: 6,
+            coinGeckoId: 'DSM',
+          },
+        ],
+        feeCurrencies: [
+          {
+            coinDenom: 'DSM',
+            coinMinimalDenom: 'udsm',
+            coinDecimals: 6,
+            coinGeckoId: 'DSM',
+          },
+        ],
+        stakeCurrency: {
+          coinDenom: 'DSM',
+          coinMinimalDenom: 'udsm',
+          coinDecimals: 6,
+          coinGeckoId: 'DSM',
+        },
+        coinType: ct,
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.035,
+          high: 0.04,
+        },
+      })
     },
     addHuahuaHack() {
       window.keplr.experimentalSuggestChain({

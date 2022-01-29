@@ -40,7 +40,7 @@
                     >
                       Keplr
                       <font color="red"
-                        >(Do NOT use this for Odin Protocol)</font
+                        >(Do NOT use this for Odin/Kava/Desmos Protocol)</font
                       >
                     </b-form-radio>
                     <b-form-radio
@@ -51,7 +51,7 @@
                     >
                       Ledger via WebUSB
                       <font color="red"
-                        >(Do NOT use this for Odin Protocol)</font
+                        >(Do NOT use this for Odin/Kava/Desmos Protocol)</font
                       >
                     </b-form-radio>
                     <b-form-radio
@@ -62,7 +62,7 @@
                     >
                       Ledger via Bluetooth
                       <font color="red"
-                        >(Do NOT use this for Odin Protocol)</font
+                        >(Do NOT use this for Odin/Kava/Desmos Protocol)</font
                       >
                     </b-form-radio>
                     <b-form-radio
