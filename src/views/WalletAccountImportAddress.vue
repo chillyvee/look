@@ -18,7 +18,27 @@
             <b-col md="12">
               <h2>
                 <font color="red">
-                  DO NOT USE A LEDGER+COSMOS APP FOR ODIN
+                  !!! SLOW DOWN !!! READ THIS:
+                  <br /><br />
+                  These Chains use a special CoinType:
+                  <br />
+                  Band, Bitsong, Crypto, Desmos, Injective, Lum, Odin,
+                  Persistence, Provenance, Secret, Sentinel, Starname, Terra,
+                  Vidulum
+                  <br />
+                  <br />
+
+                  <ul>
+                    <li>
+                      Don't use your Ledger with these chains (without their
+                      chain specific app)
+                    </li>
+                    <li>
+                      The wallet addresses for these chains are DIFFERENT so 1)
+                      Add your address manually (4th Option below) and 2) Ensure
+                      it matches the wallet address you expect in Keplr
+                    </li>
+                  </ul>
                 </font>
               </h2>
               <b-form-group
@@ -38,10 +58,8 @@
                       checked
                       class="mb-1 mt-1"
                     >
-                      Keplr
-                      <font color="red"
-                        >(Do NOT use this for Odin/Kava/Desmos Protocol)</font
-                      >
+                      Keplr - (Standard Cosmos CoinType 118 Only)
+                      <font color="red">(Read Note Above)</font>
                     </b-form-radio>
                     <b-form-radio
                       v-model="device"
@@ -50,9 +68,7 @@
                       class="mb-1"
                     >
                       Ledger via WebUSB
-                      <font color="red"
-                        >(Do NOT use this for Odin/Kava/Desmos Protocol)</font
-                      >
+                      <font color="red">(Read Note Above)</font>
                     </b-form-radio>
                     <b-form-radio
                       v-model="device"
@@ -61,26 +77,26 @@
                       class="mb-1"
                     >
                       Ledger via Bluetooth
-                      <font color="red"
-                        >(Do NOT use this for Odin/Kava/Desmos Protocol)</font
-                      >
+                      <font color="red">(Read Note Above)</font>
                     </b-form-radio>
                     <b-form-radio
                       v-model="device"
                       name="device"
                       value="address"
                     >
-                      Manual Address (Observe or Odin Protocol)
+                      Manual Address (Observe or Special CoinTypes)
                       <span style="color:green; font-weight: bold"
-                        >&lt;-- Use Manual Address for Odin Protocol ✅
-                        <br />(Should match the address you used when bridging
-                        in from https://moveto.odinprotocol.io/) <br />
+                        >&lt;-- Use Manual Address for Special Coin Types ✅
+                        <br />(Odin: Should match the address you used when
+                        bridging in from https://moveto.odinprotocol.io/) <br />
                         In case you have a mismatch, ask for help!</span
                       >
                     </b-form-radio>
                     <h2>
                       <font color="red">
-                        DO NOT USE A LEDGER+COSMOS APP FOR ODIN
+                        DO NOT USE A LEDGER+COSMOS APP FOR Special CoinTypes. Be
+                        sure you have that chain's Chain Specific Ledger App
+                        before proceeding
                       </font>
                     </h2>
                   </b-form-radio-group>
