@@ -22,9 +22,9 @@
                   <br /><br />
                   These Chains use a special CoinType:
                   <br />
-                  Band, Bitsong, Crypto, Desmos, Injective, Lum, Odin,
-                  Persistence, Provenance, Secret, Sentinel, Starname, Terra,
-                  Vidulum
+                  Band, Bitsong, Crypto, Desmos, Injective, Kava v2 Wallets,
+                  Lum, Odin, Persistence, Provenance, Secret, Sentinel,
+                  Starname, Terra, Vidulum
                   <br />
                   <br />
 

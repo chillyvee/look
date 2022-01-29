@@ -713,7 +713,7 @@ export default {
       console.log('addDesmos ct: ', ct)
       window.keplr.experimentalSuggestChain({
         chainId: 'desmos-mainnet',
-        chainName: `Desmos v3CT${ct}`,
+        chainName: `Desmos T${ct}`,
         rpc: 'https://api.mainnet.desmos.network',
         rest: 'https://api.mainnet.desmos.network',
         bip44: {
