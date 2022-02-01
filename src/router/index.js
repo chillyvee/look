@@ -164,6 +164,21 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/:chain/become_cool/:address',
+      alias: '/become_cool',
+      name: 'become_cool',
+      component: () => import('@/views/WalletBecomeCool.vue'),
+      meta: {
+        pageTitle: 'Become Cool',
+        breadcrumb: [
+          {
+            text: 'Become Cool',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/:chain/staking',
       name: 'staking',
       component: () => import('@/views/Staking.vue'),

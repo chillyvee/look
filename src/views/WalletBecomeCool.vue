@@ -16,20 +16,6 @@
     <b-card class="d-flex flex-row">
       <b-card-header class="pt-0 pl-0 pr-0">
         <b-card-title>Assets</b-card-title>
-        <div>
-          <b-button
-            v-b-modal.transfer-window
-            variant="primary"
-            size="sm"
-            class="mr-25"
-            ><feather-icon icon="SendIcon" class="d-md-none" />
-            <span class="d-none d-md-block">Transfer</span>
-          </b-button>
-          <b-button v-b-modal.ibc-transfer-window variant="danger" size="sm"
-            ><feather-icon icon="SendIcon" class="d-md-none" />
-            <span class="d-none d-md-block">IBC Transfer </span></b-button
-          >
-        </div>
       </b-card-header>
       <b-card-body class="pl-0 pr-0">
         <b-row>
@@ -81,17 +67,11 @@
 
     <b-card v-if="delegations">
       <b-card-header class="pt-0 pl-0 pr-0">
-        <b-card-title>Delegation</b-card-title>
+        <b-card-title
+          >Delegation Calculator Thingamabob
+          <font color="red">(mostly untested 😊 )</font></b-card-title
+        >
         <div>
-          <b-button
-            :to="`/${$http.config.chain_name}/become_cool/${address}`"
-            variant="primary"
-            size="sm"
-            class="mr-25"
-          >
-            <feather-icon icon="TrelloIcon" /> Delegation Calculator Thingamabob
-          </b-button>
-
           <b-button
             v-b-modal.delegate-window
             variant="primary"
@@ -100,7 +80,7 @@
           >
             <feather-icon icon="LogInIcon" class="d-md-none" /><small
               class="d-none d-md-block"
-              >Delegate</small
+              >Delegate: New Validator</small
             >
           </b-button>
           <b-button
@@ -112,13 +92,54 @@
             <feather-icon icon="ShareIcon" class="d-md-none" /><small
               class="d-none d-md-block"
             >
-              Withdraw Rewards</small
+              Claim Rewards</small
             >
           </b-button>
         </div>
       </b-card-header>
       <b-card-body class="pl-0 pr-0">
-        <b-table :items="deleTable" stacked="sm">
+        <!--
+          {{ $http.config }}
+          -->
+        <div class="mt-1">
+          <b>Step 1:</b>Total Amount To Delegate:
+          <input v-model="wantToDelegate" placeholder="0" /> Full Units
+          (whatever it is for this chain :) )
+
+          <br />
+          <br />
+          <b>Step 2</b> Choose how you want to split your delegation
+          <select v-model="allocMethod">
+            <option value="even">Even Split</option>
+            <option value="ratio">Keep Ratio</option>
+            <option value="decentralize">Decentralize (coming someday)</option>
+          </select>
+          <br />
+          <br />
+
+          <b>Step 3:</b> Click the delegate button below (the first action
+          button. The second one is redelegate and is there just to confuse you)
+          <br />
+          <br />
+
+          <b>Step 4:</b> This UI is <b>dumb</b> and can't tell when your
+          delegation has been commited to the blockchain. Click this
+          <b-button
+            variant="info"
+            size="sm"
+            class="mr-25"
+            @click="reloadDelegations"
+          >
+            <feather-icon icon="RefreshCwIcon" class="d-md-none" /><small
+              class="d-none d-md-block"
+              >Reload Delegation Amounts</small
+            >
+          </b-button>
+          about 15 seconds after each delegation to verify the "Current" amount
+          increases. Then make your next delegation.
+          <font color="red">{{ reloadMessage }}</font>
+        </div>
+        <b-table :items="delegationTable" stacked="sm">
           <template #cell(action)="data">
             <!-- size -->
             <b-button-group size="sm">
@@ -127,7 +148,7 @@
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 v-b-tooltip.hover.top="'Delegate'"
                 variant="outline-primary"
-                @click="selectValue(data.value)"
+                @click="selectValue(data)"
               >
                 <feather-icon icon="LogInIcon" />
               </b-button>
@@ -136,234 +157,25 @@
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 v-b-tooltip.hover.top="'Redelegate'"
                 variant="outline-primary"
-                @click="selectValue(data.value)"
+                @click="selectValue(data)"
               >
                 <feather-icon icon="ShuffleIcon" />
               </b-button>
+              <!--
               <b-button
                 v-b-modal.unbond-window
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 v-b-tooltip.hover.top="'Unbond'"
                 variant="outline-primary"
-                @click="selectValue(data.value)"
+                @click="selectValue(data)"
               >
                 <feather-icon icon="LogOutIcon" />
               </b-button>
+              -->
             </b-button-group>
           </template>
         </b-table>
       </b-card-body>
-    </b-card>
-
-    <b-card title="Transactions">
-      <b-table :items="txs" striped hover responsive="sm" stacked="sm">
-        <template #cell(height)="data">
-          <router-link :to="`../blocks/${data.item.height}`">
-            {{ data.item.height }}
-          </router-link>
-        </template>
-        <template #cell(txhash)="data">
-          <router-link :to="`../tx/${data.item.txhash}`">
-            {{ formatHash(data.item.txhash) }}
-          </router-link>
-        </template>
-      </b-table>
-
-      <b-pagination
-        v-if="Number(transactions.page_total) > 1"
-        :total-rows="transactions.total_count"
-        :per-page="transactions.limit"
-        :value="transactions.page_number"
-        align="center"
-        class="mt-1"
-        @change="pageload"
-      />
-    </b-card>
-
-    <b-card v-if="account" title="Profile" class="text-trancate">
-      <b-table-simple stacked="sm">
-        <b-tbody v-if="account.type === 'cosmos-sdk/BaseAccount'">
-          <b-tr>
-            <b-td> Account Type </b-td><b-td> {{ account.type }} </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td class="max-width:100px;"> Account Number </b-td
-            ><b-td> {{ account.value.account_number }} </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Sequence </b-td><b-td> {{ account.value.sequence }} </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Public Key </b-td
-            ><b-td>
-              <object-field-component :tablefield="account.value.public_key" />
-            </b-td>
-          </b-tr>
-        </b-tbody>
-        <b-tbody
-          v-else-if="
-            account.type === 'cosmos-sdk/PeriodicVestingAccount' &&
-              account.value.base_vesting_account
-          "
-        >
-          <b-tr>
-            <b-td>
-              Account Type
-            </b-td>
-            <b-td>
-              {{ account.type }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Account Number </b-td
-            ><b-td>
-              {{
-                account.value.base_vesting_account.base_account.account_number
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Sequence </b-td
-            ><b-td>
-              {{ account.value.base_vesting_account.base_account.sequence }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Public Key </b-td
-            ><b-td>
-              <object-field-component
-                :tablefield="
-                  account.value.base_vesting_account.base_account.public_key
-                "
-              />
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Original Vesting </b-td
-            ><b-td>
-              {{
-                formatToken(account.value.base_vesting_account.original_vesting)
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Delegated Free </b-td
-            ><b-td>
-              {{
-                formatToken(account.value.base_vesting_account.delegated_free)
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Delegated Vesting </b-td
-            ><b-td>
-              {{
-                formatToken(
-                  account.value.base_vesting_account.delegated_vesting
-                )
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Vesting Time </b-td
-            ><b-td>
-              {{ formatTime(account.value.start_time) }} -
-              {{
-                formatTime(account.value.base_vesting_account.end_time)
-              }}</b-td
-            >
-          </b-tr>
-          <b-tr>
-            <b-td> Vesting Periods </b-td>
-            <b-td>
-              <b-table-simple>
-                <th>Length</th>
-                <th>Amount</th>
-                <b-tr
-                  v-for="(p, index) in account.value.vesting_periods"
-                  :key="index"
-                >
-                  <td>
-                    <small
-                      >{{ p.length }} <br />{{ formatLength(p.length) }}</small
-                    >
-                  </td>
-                  <td>{{ formatToken(p.amount) }}</td>
-                </b-tr>
-              </b-table-simple>
-            </b-td>
-          </b-tr>
-        </b-tbody>
-        <b-tbody
-          v-else-if="
-            account.type === 'cosmos-sdk/DelayedVestingAccount' &&
-              account.value.base_vesting_account
-          "
-        >
-          <b-tr>
-            <b-td> Account Type </b-td><b-td> {{ account.type }} </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td style="max-width:100px;"> Account Number </b-td
-            ><b-td>
-              {{
-                account.value.base_vesting_account.base_account.account_number
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Sequence </b-td
-            ><b-td>
-              {{ account.value.base_vesting_account.base_account.sequence }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Public Key </b-td
-            ><b-td>
-              <object-field-component
-                :tablefield="
-                  account.value.base_vesting_account.base_account.public_key
-                "
-              />
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Original Vesting </b-td
-            ><b-td>
-              {{
-                formatToken(account.value.base_vesting_account.original_vesting)
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Delegated Free </b-td
-            ><b-td>
-              {{
-                formatToken(account.value.base_vesting_account.delegated_free)
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> Delegated Vesting </b-td
-            ><b-td>
-              {{
-                formatToken(
-                  account.value.base_vesting_account.delegated_vesting
-                )
-              }}
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-td> End Time </b-td
-            ><b-td>
-              {{
-                formatTime(account.value.base_vesting_account.end_time)
-              }}</b-td
-            >
-          </b-tr>
-        </b-tbody>
-        <object-field-component v-else :tablefield="account.value || account" />
-      </b-table-simple>
     </b-card>
 
     <b-popover
@@ -375,8 +187,6 @@
       <vue-qr :text="address" />
     </b-popover>
 
-    <operation-transfer-component :address="address" />
-    <operation-transfer-2-component :address="address" />
     <operation-withdraw-component :address="address" />
     <operation-unbond-component
       :address="address"
@@ -385,6 +195,7 @@
     <operation-delegate-component
       :address="address"
       :validator-address.sync="selectedValidator"
+      :ask-amount.sync="askAmount"
     />
     <operation-redelegate-component
       :address="address"
@@ -495,6 +306,13 @@ export default {
       unbonding: [],
       quotes: {},
       transactions: [],
+      wantToDelegate: 0,
+      askAmount: 0,
+      delegationTable: [],
+      snapDelegationTable: [], // CV
+      snapDelegationTotal: 0, // CV
+      allocMethod: 'even', // CV: even, ratio, decentralize
+      reloadMessage: '', // CV
     }
   },
   computed: {
@@ -567,6 +385,7 @@ export default {
           })
         )
       }
+
       if (this.unbonding) {
         // total = total.concat(this.unbonding.map(x => {
         //   const xh = x.entries[0]
@@ -609,6 +428,7 @@ export default {
         currency: parseFloat(sumCurrency.toFixed(2)),
       }
     },
+
     chartData() {
       const data = this.assetTable.items.reduce((t, c) => {
         const th = t
@@ -636,37 +456,6 @@ export default {
           },
         ],
       }
-    },
-    deleTable() {
-      const re = []
-      if (this.reward.rewards && this.delegations) {
-        this.delegations.forEach(e => {
-          const reward = this.reward.rewards.find(
-            r => r.validator_address === e.delegation.validator_address
-          )
-          re.push({
-            validator: getStakingValidatorOperator(
-              this.$http.config.chain_name,
-              e.delegation.validator_address,
-              8
-            ),
-            token: formatToken(e.balance, {}, 2),
-            reward: tokenFormatter(reward.reward),
-            action: e.delegation.validator_address,
-          })
-        })
-      }
-      return re
-    },
-    accTable() {
-      let table = {}
-      if (
-        this.account &&
-        this.account.type === 'cosmos-sdk/PeriodicVestingAccount'
-      ) {
-        table = this.account.value
-      }
-      return table
     },
   },
   created() {
@@ -698,12 +487,7 @@ export default {
         }
       })
     })
-    this.$http.getStakingReward(this.address).then(res => {
-      this.reward = res
-    })
-    this.$http.getStakingDelegations(this.address).then(res => {
-      this.delegations = res.delegation_responses || res
-    })
+    this.reloadDelegations({ snap: 1 })
     // this.$http.getStakingRedelegations(this.address).then(res => {
     //   this.redelegations = res.redelegation_responses || res
     // })
@@ -718,14 +502,93 @@ export default {
     //   console.log(res)
     // })
   },
+  watch: {
+    allocMethod: function(newVal, oldVal) {
+      // watch it
+      console.log('allocMethod changed: ', newVal, ' | was: ', oldVal)
+      this.delegationTable = this.calcDeleTable()
+    },
+    wantToDelegate: function(newVal, oldVal) {
+      // watch it
+      console.log('wantToDelegate changed: ', newVal, ' | was: ', oldVal)
+      this.delegationTable = this.calcDeleTable()
+    },
+  },
   methods: {
+    getSnapDelegationAmount(targetValAddress) {
+      // CV
+      // this.snapDelegationTable = this.calcDeleTable()
+      return this.snapDelegationTable.find(sd => sd.action == targetValAddress)
+        .current
+    },
+    calcDeleTable() {
+      // CV
+      const re = []
+      if (this.delegations) {
+        let delQty = this.delegations.length
+
+        this.delegations.forEach(e => {
+          let line = {
+            validator: getStakingValidatorOperator(
+              this.$http.config.chain_name,
+              e.delegation.validator_address,
+              8
+            ),
+          }
+
+          let current = formatToken(e.balance, {}, 2)
+          if (this.snapDelegationTable.length > 0) {
+            console.log('Use Snap Table')
+            line.start = this.getSnapDelegationAmount(
+              e.delegation.validator_address
+            )
+          } else {
+            console.log('Use First Pass ')
+            line.start = current
+          }
+          line.current = current
+          line.action = e.delegation.validator_address
+          if (this.allocMethod == 'even') {
+            line.addAmount = this.wantToDelegate / delQty
+          } else if (this.allocMethod == 'ratio') {
+            line.addAmount =
+              this.wantToDelegate *
+              (parseFloat(line.start) / this.snapDelegationTotal)
+          } else if (this.allocMethod == 'decentralize') {
+            line.addAmount = 123456789
+          }
+          re.push(line)
+        })
+      }
+      return re
+    },
+    reloadDelegations(options = {}) {
+      // CV
+      this.reloadMessage = 'Reloading...'
+      this.$http.getStakingDelegations(this.address).then(res => {
+        this.reloadMessage = ''
+        this.delegations = res.delegation_responses || res
+        this.delegationTable = this.calcDeleTable()
+        if (options.snap) {
+          console.log('Take Initial Snapshot')
+          this.snapDelegationTable = [...this.delegationTable]
+          this.snapDelegationTotal = this.snapDelegationTable
+            .map(sd => sd.current)
+            .reduce((a, b) => parseFloat(a) + parseFloat(b), 0)
+        } else {
+          console.log('No Snapshot')
+        }
+      })
+    },
     pageload(v) {
       this.$http.getTxsBySender(this.address, v).then(res => {
         this.transactions = res
       })
     },
-    selectValue(v) {
-      this.selectedValidator = v
+    selectValue(data) {
+      let item = data.item
+      this.selectedValidator = item.action
+      this.askAmount = item.addAmount
     },
     formatHash: abbrAddress,
     formatDenom(v) {

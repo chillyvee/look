@@ -302,6 +302,10 @@ export default {
       type: String,
       default: null,
     },
+    askAmount: {
+      type: Number,
+      default: null,
+    },
   },
   data() {
     return {
@@ -374,6 +378,18 @@ export default {
   },
   created() {
     // console.log('address: ', this.address)
+    console.log('this.askAmount: ', this.askAmount)
+    if (this.askAmount > 0) {
+      this.amount = this.askAmount
+    }
+  },
+  watch: {
+    askAmount: function(newVal, oldVal) {
+      // watch it
+      //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+      this.amount = newVal
+      //console.log('new Amount', this.amount, '/', newVal)
+    },
   },
   methods: {
     naughty(valinfo, i, a) {
@@ -469,7 +485,7 @@ export default {
 
       // CV Adjust gas and fees but only for specific networks
       if (this.chainId == 'dig-1') {
-        console.log("dig-1 dynamic gas: ", this.delegations.length)
+        console.log('dig-1 dynamic gas: ', this.delegations.length)
         this.fee = 2000
         this.gas = 200000
       } else if (this.$store.state.chains.selected.chain_name == 'comdex') {
