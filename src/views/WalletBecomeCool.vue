@@ -138,6 +138,22 @@
           about 15 seconds after each delegation to verify the "Current" amount
           increases. Then make your next delegation.
           <font color="red">{{ reloadMessage }}</font>
+          <br />
+          <br />
+          <b>Step 5:</b>Review the "Add Amount" delegations below. To execute
+          the allocations click:
+          <b-button
+            variant="info"
+            size="sm"
+            class="mr-25"
+            v-b-modal.multi-delegate-window
+            @click="tryMultiDelegate"
+          >
+            <feather-icon icon="RefreshCwIcon" class="d-md-none" /><small
+              class="d-none d-md-block"
+              >Execute Multi Delegate</small
+            >
+          </b-button>
         </div>
         <b-table :items="delegationTable" stacked="sm">
           <template #cell(action)="data">
@@ -197,6 +213,10 @@
       :validator-address.sync="selectedValidator"
       :ask-amount.sync="askAmount"
     />
+    <operation-multi-delegate-component
+      :address="address"
+      :delegationTable.sync="delegationTable"
+    />
     <operation-redelegate-component
       :address="address"
       :validator-address.sync="selectedValidator"
@@ -250,6 +270,7 @@ import OperationTransferComponent from './OperationTransferComponent.vue'
 import OperationWithdrawComponent from './OperationWithdrawComponent.vue'
 import OperationUnbondComponent from './OperationUnbondComponent.vue'
 import OperationDelegateComponent from './OperationDelegateComponent.vue'
+import OperationMultiDelegateComponent from './OperationMultiDelegateComponent.vue'
 import OperationRedelegateComponent from './OperationRedelegateComponent.vue'
 import OperationTransfer2Component from './OperationTransfer2Component.vue'
 import ChartComponentDoughnut from './ChartComponentDoughnut.vue'
@@ -280,6 +301,7 @@ export default {
     OperationTransferComponent,
     OperationWithdrawComponent,
     OperationDelegateComponent,
+    OperationMultiDelegateComponent,
     OperationRedelegateComponent,
     OperationUnbondComponent,
     OperationTransfer2Component,
@@ -584,6 +606,11 @@ export default {
       this.$http.getTxsBySender(this.address, v).then(res => {
         this.transactions = res
       })
+    },
+    tryMultiDelegate(data) {
+      //let item = data.item
+      //this.selectedValidator = item.action
+      //this.askAmount = item.addAmount
     },
     selectValue(data) {
       let item = data.item
