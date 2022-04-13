@@ -300,6 +300,7 @@ export default {
         // console.log("dig-1 dynamic gas: ", this.delegations.length)
         return 5000 * this.activeDelegations.length
       } else {
+        return 800
       }
     },
     calcGas() {
@@ -357,7 +358,7 @@ export default {
         setTimeout(() => {
           this.fee = this.calcFee()
           this.gas = this.calcGas()
-        }, 100)
+        }, 500)
       })
       //this.fee = this.calcFee
       //this.gas = this.calcGas
