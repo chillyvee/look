@@ -12,6 +12,7 @@
       @ok="handleOk"
       @show="loadBalance"
     >
+      <p>Chain: {{ chainId }}</p>
       <p v-if="validatorAddress">Validator: {{ validatorAddress }}</p>
       <p v-else>Validator: All</p>
       <!--
@@ -299,6 +300,9 @@ export default {
       } else if (this.chainId == 'comdex-1') {
         // console.log("dig-1 dynamic gas: ", this.delegations.length)
         return 5000 * this.activeDelegations.length
+      } else if (this.chainId == 'sifchain-1') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        return 100000 * this.activeDelegations.length
       } else {
         return 800
       }
@@ -396,11 +400,11 @@ export default {
       const txFee = {
         amount: [
           {
-            amount: this.fee,
+            amount: String(this.fee),
             denom: this.feeDenom,
           },
         ],
-        gas: this.gas,
+        gas: String(this.gas),
       }
 
       const signerData = {
@@ -419,6 +423,7 @@ export default {
         signerData
       )
         .then(bodyBytes => {
+          console.log('signed', bodyBytes)
           this.$http
             .broadcastTx(bodyBytes, this.selectedChain)
             .then(res => {
@@ -443,6 +448,7 @@ export default {
         })
         .catch(e => {
           this.error = e
+          console.log('tx sign error', e)
         })
       // Send tokens
       // return client.sendTokens(this.address, this.recipient, sendCoins, this.memo)
