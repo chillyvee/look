@@ -12,6 +12,13 @@
       @ok="handleOk"
       @show="loadBalance"
     >
+      <p v-if="validatorAddress">Validator: {{ validatorAddress }}</p>
+      <p v-else>Validator: All</p>
+      <!--
+      <p>Delegations:{{ activeDelegations }}</p>
+      <hr />
+      <p>Txmsgs:{{ genTxMsgs }}</p>
+      -->
       <validation-observer ref="simpleRules">
         <b-form>
           <b-row>
@@ -197,6 +204,10 @@ export default {
     ToastificationContent,
   },
   props: {
+    validatorAddress: {
+      type: String,
+      default: null,
+    },
     address: {
       type: String,
       default: '',
@@ -236,6 +247,30 @@ export default {
     feeDenoms() {
       return this.balance.filter(item => !item.denom.startsWith('ibc'))
     },
+    activeDelegations() {
+      // CV Filter for single/selected(TODO)/all validators
+      if (!this.validatorAddress) {
+        return this.delegations
+      } else {
+        return this.delegations.filter(
+          i => this.validatorAddress == i.delegation.validator_address
+        )
+      }
+    },
+    genTxMsgs() {
+      // CV : genereate tx messages
+      const txMsgs = []
+      this.activeDelegations.forEach(i => {
+        txMsgs.push({
+          typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+          value: {
+            delegatorAddress: this.address,
+            validatorAddress: i.delegation.validator_address,
+          },
+        })
+      })
+      return txMsgs
+    },
   },
   created() {
     // console.log('address: ', this.address)
@@ -255,6 +290,33 @@ export default {
         }
       }
       return null
+    },
+    calcFee() {
+      // CV Adjust gas and fees but only for specific networks
+      if (this.chainId == 'dig-1') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        return 2000 * this.activeDelegations.length
+      } else if (this.chainId == 'comdex-1') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        return 5000 * this.activeDelegations.length
+      } else {
+      }
+    },
+    calcGas() {
+      // CV Adjust gas and fees but only for specific networks
+      let tempGas = 0
+      if (this.chainId == 'dig-1') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        tempGas = 100000 * this.activeDelegations.length
+      } else if (this.chainId == 'comdex-1') {
+        // console.log("dig-1 dynamic gas: ", this.delegations.length)
+        tempGas = 100000 * this.activeDelegations.length
+      } else {
+      }
+      if (tempGas < 200000) {
+        return 200000
+      }
+      return tempGas
     },
     loadBalance() {
       this.account = this.computeAccount()
@@ -291,21 +353,14 @@ export default {
       }
       this.$http.getStakingDelegations(this.address).then(res => {
         this.delegations = res.delegation_responses
-        // CV Adjust gas and fees but only for specific networks
-        if (this.chainId == 'dig-1') {
-          // console.log("dig-1 dynamic gas: ", this.delegations.length)
-          this.fee = 2000 * this.delegations.length
-          this.gas = 100000 * this.delegations.length
-        } else if (this.chainId == 'comdex-1') {
-          // console.log("dig-1 dynamic gas: ", this.delegations.length)
-          this.fee = 5000 * this.delegations.length
-          this.gas = 100000 * this.delegations.length
-        } else {
-        }
-        if (this.gas < 200000) {
-          this.gas = 200000
-        }
+        // CV: computed.activeDelegations update before recalc gas/fee
+        setTimeout(() => {
+          this.fee = this.calcFee()
+          this.gas = this.calcGas()
+        }, 100)
       })
+      //this.fee = this.calcFee
+      //this.gas = this.calcGas
     },
     handleOk(bvModalEvt) {
       // console.log('send')
@@ -326,16 +381,7 @@ export default {
       return formatToken(v)
     },
     async sendTx() {
-      const txMsgs = []
-      this.delegations.forEach(i => {
-        txMsgs.push({
-          typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-          value: {
-            delegatorAddress: this.address,
-            validatorAddress: i.delegation.validator_address,
-          },
-        })
-      })
+      const txMsgs = this.genTxMsgs
 
       if (txMsgs.length === 0) {
         this.error = 'No delegation found'

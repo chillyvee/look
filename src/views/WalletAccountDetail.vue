@@ -108,6 +108,7 @@
             v-b-modal.withdraw-window
             variant="primary"
             size="sm"
+            @click="selectValue(undefined)"
           >
             <feather-icon icon="ShareIcon" class="d-md-none" /><small
               class="d-none d-md-block"
@@ -130,6 +131,15 @@
                 @click="selectValue(data.value)"
               >
                 <feather-icon icon="LogInIcon" />
+              </b-button>
+              <b-button
+                v-b-modal.withdraw-window
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                v-b-tooltip.hover.top="'Withdraw'"
+                variant="outline-primary"
+                @click="selectValue(data.value)"
+              >
+                <feather-icon icon="DollarSignIcon" />
               </b-button>
               <b-button
                 v-b-modal.redelegate-window
@@ -377,7 +387,10 @@
 
     <operation-transfer-component :address="address" />
     <operation-transfer-2-component :address="address" />
-    <operation-withdraw-component :address="address" />
+    <operation-withdraw-component
+      :address="address"
+      :validator-address.sync="selectedValidator"
+    />
     <operation-unbond-component
       :address="address"
       :validator-address.sync="selectedValidator"
