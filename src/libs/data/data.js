@@ -177,7 +177,6 @@ export async function sign(
 ) {
   let transport
   let signer
-  //console.log('sign', 'start')
   switch (device) {
     case 'ledgerBle':
       transport = await TransportWebBLE.create()
@@ -186,7 +185,6 @@ export async function sign(
       })
       break
     case 'ledgerUSB':
-      //console.log('sign', 'ledgerUSB')
       transport = await TransportWebUSB.create()
       signer = new LedgerSigner(transport, {
         hdPaths: [getHdPath(signerAddress)],
@@ -205,19 +203,15 @@ export async function sign(
   // if (signer) return signAmino(signer, signerAddress, messages, fee, memo, signerData)
 
   // Ensure the address has some tokens to spend
-  //console.log('sign', 'await offline signer')
   const client = await PingWalletClient.offline(signer)
   // const client = await SigningStargateClient.offline(signer)
-  //console.log('sign', 'signAmino')
-  const rt = client.signAmino(
+  return client.signAmino(
     device === 'keplr' ? signerAddress : toSignAddress(signerAddress),
     messages,
     fee,
     memo,
     signerData
   )
-  //console.log('sign rt', rt)
-  return rt
   // return signDirect(signer, signerAddress, messages, fee, memo, signerData)
 }
 

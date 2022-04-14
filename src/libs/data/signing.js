@@ -24,40 +24,17 @@ export default class PingWalletClient extends SigningStargateClient {
     return instance
   }
 
-  async signAmino2(
-    signerAddress,
-    messages,
-    fee,
-    memo,
-    { accountNumber, sequence, chainId }
-  ) {
-    console.log('signAmino2', 'start')
+  async signAmino2(signerAddress, messages, fee, memo, { accountNumber, sequence, chainId }) {
     // utils_1.assert(!proto_signing_1.isOfflineDirectSigner(this.signer))
-    const accountFromSigner = (await this.signer.getAccounts()).find(
-      account => account.address === signerAddress
-    )
+    const accountFromSigner = (await this.signer.getAccounts()).find(account => account.address === signerAddress)
     if (!accountFromSigner) {
       throw new Error('Failed to retrieve account from signer')
     }
-    const pubkey = proto_signing_1.encodePubkey(
-      amino_1.encodeSecp256k1Pubkey(accountFromSigner.pubkey)
-    )
+    const pubkey = proto_signing_1.encodePubkey(amino_1.encodeSecp256k1Pubkey(accountFromSigner.pubkey))
     const signMode = signing_1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON
     const msgs = messages.map(msg => this.aminoTypes.toAmino(msg))
-    const signDoc = amino_1.makeSignDoc(
-      msgs,
-      fee,
-      chainId,
-      memo,
-      accountNumber,
-      sequence
-    )
-    //console.log('signAmino2', 'await signAmino')
-    const { signature, signed } = await this.signer.signAmino(
-      signerAddress,
-      signDoc
-    )
-    //console.log('LL', signature, signed)
+    const signDoc = amino_1.makeSignDoc(msgs, fee, chainId, memo, accountNumber, sequence)
+    const { signature, signed } = await this.signer.signAmino(signerAddress, signDoc)
     const signedTxBody = {
       messages: signed.msgs.map(msg => this.aminoTypes.fromAmino(msg)),
       memo: signed.memo,
@@ -69,13 +46,7 @@ export default class PingWalletClient extends SigningStargateClient {
     const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject)
     const signedGasLimit = math_1.Int53.fromString(signed.fee.gas).toNumber()
     const signedSequence = math_1.Int53.fromString(signed.sequence).toNumber()
-    const signedAuthInfoBytes = proto_signing_1.makeAuthInfoBytes(
-      [{ pubkey, sequence: signedSequence }],
-      signed.fee.amount,
-      signedGasLimit,
-      signMode
-    )
-    //console.log('signAmino2', 'end')
+    const signedAuthInfoBytes = proto_signing_1.makeAuthInfoBytes([{ pubkey, sequence: signedSequence }], signed.fee.amount, signedGasLimit, signMode)
     return tx_5.TxRaw.fromPartial({
       bodyBytes: signedTxBodyBytes,
       authInfoBytes: signedAuthInfoBytes,
