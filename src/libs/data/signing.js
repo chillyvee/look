@@ -52,12 +52,12 @@ export default class PingWalletClient extends SigningStargateClient {
       accountNumber,
       sequence
     )
-    console.log('signAmino2', 'await signAmino')
+    //console.log('signAmino2', 'await signAmino')
     const { signature, signed } = await this.signer.signAmino(
       signerAddress,
       signDoc
     )
-    console.log('LL', signature, signed)
+    //console.log('LL', signature, signed)
     const signedTxBody = {
       messages: signed.msgs.map(msg => this.aminoTypes.fromAmino(msg)),
       memo: signed.memo,
@@ -75,7 +75,7 @@ export default class PingWalletClient extends SigningStargateClient {
       signedGasLimit,
       signMode
     )
-    console.log('signAmino2', 'end')
+    //console.log('signAmino2', 'end')
     return tx_5.TxRaw.fromPartial({
       bodyBytes: signedTxBodyBytes,
       authInfoBytes: signedAuthInfoBytes,

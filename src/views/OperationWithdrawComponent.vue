@@ -423,7 +423,7 @@ export default {
         signerData
       )
         .then(bodyBytes => {
-          console.log('signed', bodyBytes)
+            //console.log('signed', bodyBytes)
           this.$http
             .broadcastTx(bodyBytes, this.selectedChain)
             .then(res => {
@@ -448,7 +448,7 @@ export default {
         })
         .catch(e => {
           this.error = e
-          console.log('tx sign error', e)
+          //console.log('tx sign error', e)
         })
       // Send tokens
       // return client.sendTokens(this.address, this.recipient, sendCoins, this.memo)
